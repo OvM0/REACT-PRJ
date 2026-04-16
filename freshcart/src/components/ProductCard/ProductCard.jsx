@@ -17,15 +17,15 @@ export default function ProductCard({ product }) {
   async function handleAddToCart(e) {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.error('يجب تسجيل الدخول أولاً');
+      toast.error('Please login first');
       return;
     }
     setAddingCart(true);
     try {
       await dispatch(addToCart(product._id)).unwrap();
-      toast.success('تمت الإضافة إلى السلة ✓');
+      toast.success('Added to cart');
     } catch (err) {
-      toast.error(err || 'حدث خطأ');
+      toast.error(err || 'An error occurred');
     } finally {
       setAddingCart(false);
     }
@@ -34,20 +34,20 @@ export default function ProductCard({ product }) {
   async function handleWishlist(e) {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.error('يجب تسجيل الدخول أولاً');
+      toast.error('Please login first');
       return;
     }
     setAddingWish(true);
     try {
       if (isWishlisted) {
         await dispatch(removeFromWishlist(product._id)).unwrap();
-        toast.success('تمت الإزالة من المفضلة');
+        toast.success('Removed from wishlist');
       } else {
         await dispatch(addToWishlist(product._id)).unwrap();
-        toast.success('تمت الإضافة إلى المفضلة ❤');
+        toast.success('Added to wishlist');
       }
     } catch (err) {
-      toast.error(err || 'حدث خطأ');
+      toast.error(err || 'An error occurred');
     } finally {
       setAddingWish(false);
     }
@@ -58,98 +58,100 @@ export default function ProductCard({ product }) {
     : null;
 
   return (
-    <div className="product-card card border-0 shadow-sm h-100 position-relative overflow-hidden">
-      {/* Wishlist Button */}
-      <button
-        className="wishlist-btn position-absolute"
-        onClick={handleWishlist}
-        disabled={addingWish}
-        title={isWishlisted ? 'إزالة من المفضلة' : 'أضف للمفضلة'}
-      >
-        <i className={`fa-${isWishlisted ? 'solid' : 'regular'} fa-heart`}
-          style={{ color: isWishlisted ? '#e74c3c' : '#adb5bd' }}></i>
-      </button>
-
-      {/* Discount Badge */}
+    <div className="product-card-exact card border-light h-100 position-relative bg-white shadow-sm overflow-hidden">
+      {/* Discount Badge - Top Left */}
       {discount && (
-        <span className="badge bg-danger position-absolute top-0 start-0 m-2 rounded-pill">
+        <span className="badge bg-danger rounded-0 position-absolute start-0 top-0 m-2 px-2 py-1" style={{ zIndex: 10, fontSize: '0.65rem' }}>
           -{discount}%
         </span>
       )}
 
-      <Link to={`/products/${product._id}`} className="text-decoration-none">
-        <div className="product-img-wrap">
+      {/* Floating Action Bar - Right Side - Visible by default as in screenshot */}
+      <div className="card-actions-float-exact">
+        <button className="action-circle-btn-exact" onClick={handleWishlist} disabled={addingWish}>
+          <i className={`fa-${isWishlisted ? 'solid' : 'regular'} fa-heart`} style={{ color: isWishlisted ? '#e74c3c' : '#adb5bd' }}></i>
+        </button>
+        <button className="action-circle-btn-exact"><i className="fas fa-arrows-rotate"></i></button>
+        <button className="action-circle-btn-exact"><i className="far fa-eye"></i></button>
+      </div>
+
+      <Link to={`/products/${product._id}`} className="text-decoration-none h-100 d-flex flex-column">
+        <div className="p-4 text-center">
           <img
             src={product.imageCover}
             alt={product.title}
-            className="card-img-top"
-            style={{ objectFit: 'cover', height: '220px', transition: 'transform 0.4s' }}
+            className="img-fluid"
+            style={{ height: '180px', objectFit: 'contain' }}
             onError={e => { e.target.src = 'https://via.placeholder.com/300x220?text=No+Image'; }}
           />
         </div>
 
-        <div className="card-body p-3">
-          <p className="text-success small fw-semibold mb-1" style={{ fontSize: '0.8rem' }}>
-            {product.category?.name}
+        <div className="card-body px-3 pb-3 pt-0 d-flex flex-column">
+          <p className="text-muted small mb-1" style={{ fontSize: '0.75rem' }}>
+            {product.category?.name || 'Category'}
           </p>
-          <h6 className="card-title text-truncate fw-bold mb-1" style={{ color: '#2d3436' }}>
+          <h6 className="card-title text-truncate fw-bold mb-1" style={{ color: '#2d3436', fontSize: '1rem' }}>
             {product.title}
           </h6>
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <div>
-              <span className="fw-bold text-success">
-                {product.priceAfterDiscount || product.price} جنيه
+          
+          <div className="d-flex align-items-center gap-1 mb-3">
+            {[1, 2, 3, 4, 5].map(star => (
+              <i key={star} className={`fas fa-star ${star <= Math.round(product.ratingsAverage) ? 'text-warning' : 'text-light'}`} style={{ fontSize: '0.8rem' }}></i>
+            ))}
+            <span className="text-muted ms-1" style={{ fontSize: '0.8rem' }}>{product.ratingsAverage?.toFixed(1)} ({product.ratingsQuantity || 0})</span>
+          </div>
+
+          <div className="mt-auto d-flex justify-content-between align-items-center">
+            <div className="lh-1">
+              <span className="fw-bold text-dark fs-4">
+                {product.priceAfterDiscount || product.price} EGP
               </span>
               {product.priceAfterDiscount && (
-                <span className="text-muted text-decoration-line-through ms-2 small">
-                  {product.price} جنيه
-                </span>
+                <div className="text-muted text-decoration-line-through mt-1" style={{ fontSize: '0.8rem' }}>
+                  {product.price} EGP
+                </div>
               )}
             </div>
-            <div className="d-flex align-items-center gap-1">
-              <i className="fa-solid fa-star" style={{ color: '#f39c12', fontSize: '0.8rem' }}></i>
-              <span style={{ fontSize: '0.85rem', color: '#636e72' }}>
-                {product.ratingsAverage?.toFixed(1)}
-              </span>
-            </div>
+            
+            <button
+              className="btn btn-plus-exact rounded-circle d-flex align-items-center justify-content-center"
+              onClick={handleAddToCart}
+              disabled={addingCart}
+            >
+              <i className="fas fa-plus"></i>
+            </button>
           </div>
         </div>
       </Link>
 
-      <div className="card-footer bg-transparent border-0 p-3 pt-0">
-        <button
-          className="btn btn-success w-100 rounded-pill btn-sm fw-semibold"
-          onClick={handleAddToCart}
-          disabled={addingCart}
-        >
-          {addingCart ? (
-            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-          ) : (
-            <i className="fas fa-cart-plus me-2"></i>
-          )}
-          {addingCart ? 'جاري الإضافة...' : 'أضف للسلة'}
-        </button>
-      </div>
-
       <style>{`
-        .product-card { border-radius: 16px !important; transition: all 0.3s; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important; }
-        .product-card:hover .card-img-top { transform: scale(1.05); }
-        .product-img-wrap { overflow: hidden; }
-        .wishlist-btn {
-          top: 10px; right: 10px;
-          background: white;
-          border: none;
-          border-radius: 50%;
-          width: 36px; height: 36px;
-          display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-          cursor: pointer;
-          z-index: 1;
-          transition: transform 0.2s;
+        .product-card-exact { border-radius: 12px !important; border-color: #f1f1f1 !important; transition: all 0.3s; }
+        .product-card-exact:hover { border-color: #0aad0a !important; box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important; }
+        .card-actions-float-exact {
+          position: absolute;
+          right: 12px; top: 12px;
+          display: flex; flex-direction: column; gap: 8px;
+          z-index: 10;
         }
-        .wishlist-btn:hover { transform: scale(1.15); }
+        .action-circle-btn-exact {
+          width: 38px; height: 38px;
+          background: white; border: none;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+          border-radius: 50%; display: flex; align-items: center; justify-content: center;
+          color: #1a1a2e; font-size: 0.9rem;
+          transition: all 0.2s; cursor: pointer;
+        }
+        .action-circle-btn-exact:hover { background: #0aad0a; color: white; }
+        .btn-plus-exact {
+          width: 50px; height: 50px;
+          background-color: #0aad0a;
+          color: white; border: none;
+          font-size: 1.2rem;
+          transition: transform 0.2s, background 0.2s;
+        }
+        .btn-plus-exact:hover { transform: scale(1.1); background-color: #088a08; }
       `}</style>
     </div>
   );
 }
+

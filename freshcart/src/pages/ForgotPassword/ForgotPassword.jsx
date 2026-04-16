@@ -17,16 +17,16 @@ export default function ForgotPassword() {
   const emailFormik = useFormik({
     initialValues: { email: '' },
     validationSchema: Yup.object({
-      email: Yup.string().email('بريد إلكتروني غير صحيح').required('البريد الإلكتروني مطلوب'),
+      email: Yup.string().email('Invalid email address').required('Email is required'),
     }),
     onSubmit: async (values) => {
       try {
         await dispatch(forgotPassword(values.email)).unwrap();
         setEmail(values.email);
-        toast.success('تم إرسال رمز التحقق لبريدك الإلكتروني');
+        toast.success('Verification code sent to your email');
         setStep(2);
       } catch (err) {
-        toast.error(err || 'حدث خطأ');
+        toast.error(err || 'Something went wrong');
       }
     },
   });
@@ -35,15 +35,15 @@ export default function ForgotPassword() {
   const codeFormik = useFormik({
     initialValues: { resetCode: '' },
     validationSchema: Yup.object({
-      resetCode: Yup.string().length(6, 'الرمز يجب أن يكون 6 أرقام').required('رمز التحقق مطلوب'),
+      resetCode: Yup.string().length(6, 'Code must be exactly 6 digits').required('Verification code is required'),
     }),
     onSubmit: async (values) => {
       try {
         await dispatch(verifyResetCode(values.resetCode)).unwrap();
-        toast.success('تم التحقق من الرمز');
+        toast.success('Code verified successfully');
         setStep(3);
       } catch (err) {
-        toast.error(err || 'رمز غير صحيح');
+        toast.error(err || 'Invalid verification code');
       }
     },
   });
@@ -52,187 +52,187 @@ export default function ForgotPassword() {
   const passwordFormik = useFormik({
     initialValues: { newPassword: '', confirmPassword: '' },
     validationSchema: Yup.object({
-      newPassword: Yup.string().min(6, 'كلمة المرور على الأقل 6 أحرف').required('كلمة المرور مطلوبة'),
+      newPassword: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
       confirmPassword: Yup.string()
-        .oneOf([Yup.ref('newPassword')], 'كلمتا المرور غير متطابقتين')
-        .required('تأكيد كلمة المرور مطلوب'),
+        .oneOf([Yup.ref('newPassword')], 'Passwords do not match')
+        .required('Confirm password is required'),
     }),
     onSubmit: async (values) => {
       try {
         await dispatch(resetPassword({ email, newPassword: values.newPassword })).unwrap();
-        toast.success('تم تغيير كلمة المرور بنجاح!');
-        navigate('/');
+        toast.success('Password updated successfully!');
+        navigate('/login');
       } catch (err) {
-        toast.error(err || 'حدث خطأ');
+        toast.error(err || 'Failed to update password');
       }
     },
   });
 
   const steps = [
-    { num: 1, label: 'البريد الإلكتروني' },
-    { num: 2, label: 'رمز التحقق' },
-    { num: 3, label: 'كلمة المرور' },
+    { num: 1, label: 'Email' },
+    { num: 2, label: 'Verify' },
+    { num: 3, label: 'Reset' },
   ];
 
   return (
-    <div className="d-flex align-items-center justify-content-center py-5" style={{ minHeight: '90vh', background: 'linear-gradient(135deg, #f0fdf0, #e8f5e9)' }}>
+    <div className="d-flex align-items-center justify-content-center py-5" style={{ minHeight: '90vh', background: '#f8fafc' }}>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6 col-xl-5">
-            <div className="card border-0 shadow-lg" style={{ borderRadius: '24px' }}>
+            <div className="card border-0 shadow-lg" style={{ borderRadius: '30px' }}>
               <div className="card-body p-5">
-                {/* Logo */}
+                {/* Header Icon */}
                 <div className="text-center mb-4">
-                  <div className="step-icon mb-3">
+                  <div className="step-icon mb-4">
                     <i className={`fas ${step === 1 ? 'fa-envelope' : step === 2 ? 'fa-key' : 'fa-lock'} fa-2x text-success`}></i>
                   </div>
-                  <h4 className="fw-bold" style={{ color: '#1a1a2e' }}>
-                    {step === 1 && 'نسيت كلمة المرور؟'}
-                    {step === 2 && 'التحقق من الهوية'}
-                    {step === 3 && 'كلمة مرور جديدة'}
-                  </h4>
+                  <h3 className="fw-bold mb-2" style={{ color: '#1a1a2e' }}>
+                    {step === 1 && 'Forgot Password?'}
+                    {step === 2 && 'Verify Identity'}
+                    {step === 3 && 'New Password'}
+                  </h3>
                   <p className="text-muted small">
-                    {step === 1 && 'أدخل بريدك الإلكتروني وسنرسل لك رمز التحقق'}
-                    {step === 2 && `أدخل الرمز المرسل إلى ${email}`}
-                    {step === 3 && 'اختر كلمة مرور جديدة وقوية'}
+                    {step === 1 && 'Enter your email address to receive a recovery code'}
+                    {step === 2 && `Enter the 6-digit code sent to ${email}`}
+                    {step === 3 && 'Choose a strong and secure new password'}
                   </p>
                 </div>
 
                 {/* Progress Steps */}
-                <div className="d-flex align-items-center justify-content-center gap-2 mb-4">
+                <div className="d-flex align-items-center justify-content-center gap-2 mb-5">
                   {steps.map((s, i) => (
                     <React.Fragment key={s.num}>
-                      <div className="text-center">
-                        <div className={`step-circle ${step >= s.num ? 'active' : ''}`}>
+                      <div className="text-center position-relative">
+                        <div className={`step-circle shadow-sm ${step >= s.num ? 'active' : ''}`}>
                           {step > s.num ? <i className="fas fa-check"></i> : s.num}
                         </div>
-                        <small className={`d-block mt-1 ${step === s.num ? 'text-success fw-bold' : 'text-muted'}`} style={{ fontSize: '0.7rem' }}>
+                        <small className={`d-block mt-2 ${step === s.num ? 'text-success fw-bold' : 'text-muted'}`} style={{ fontSize: '0.7rem' }}>
                           {s.label}
                         </small>
                       </div>
                       {i < steps.length - 1 && (
-                        <div className="step-line" style={{ background: step > s.num ? '#0aad0a' : '#e9ecef' }}></div>
+                        <div className="step-line" style={{ background: step > s.num ? '#0aad0a' : '#e2e8f0' }}></div>
                       )}
                     </React.Fragment>
                   ))}
                 </div>
 
-                {/* Step 1 */}
-                {step === 1 && (
-                  <form onSubmit={emailFormik.handleSubmit}>
-                    <div className="mb-4">
-                      <label className="form-label fw-semibold">البريد الإلكتروني</label>
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-end-0" style={{ borderRadius: '12px 0 0 12px' }}>
-                          <i className="fas fa-envelope text-muted"></i>
-                        </span>
+                {/* Step Forms */}
+                <div className="form-container mb-4">
+                  {step === 1 && (
+                    <form onSubmit={emailFormik.handleSubmit}>
+                      <div className="mb-4">
+                        <label className="form-label fw-bold text-dark mb-2">Email Address</label>
+                        <div className="input-group">
+                          <span className="input-group-text bg-light border-0 px-3" style={{ borderTopLeftRadius: '15px', borderBottomLeftRadius: '15px' }}>
+                            <i className="fas fa-envelope text-muted"></i>
+                          </span>
+                          <input
+                            type="email"
+                            className={`form-control bg-light border-0 shadow-none py-3 ${emailFormik.touched.email && emailFormik.errors.email ? 'is-invalid' : ''}`}
+                            placeholder="example@email.com"
+                            name="email"
+                            value={emailFormik.values.email}
+                            onChange={emailFormik.handleChange}
+                            onBlur={emailFormik.handleBlur}
+                            style={{ borderTopRightRadius: '15px', borderBottomRightRadius: '15px' }}
+                          />
+                          {emailFormik.touched.email && emailFormik.errors.email && (
+                            <div className="invalid-feedback ps-2">{emailFormik.errors.email}</div>
+                          )}
+                        </div>
+                      </div>
+                      <button type="submit" className="btn btn-success w-100 rounded-pill py-3 fw-bold transition-200" disabled={loading} style={{ backgroundColor: '#0aad0a', border: 'none' }}>
+                        {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : <i className="fas fa-paper-plane me-2"></i>}
+                        {loading ? 'Sending...' : 'Send Code'}
+                      </button>
+                    </form>
+                  )}
+
+                  {step === 2 && (
+                    <form onSubmit={codeFormik.handleSubmit}>
+                      <div className="mb-4">
+                        <label className="form-label fw-bold text-dark mb-2 text-center d-block">6-Digit Code</label>
                         <input
-                          type="email"
-                          className={`form-control shadow-none border-start-0 ${emailFormik.touched.email && emailFormik.errors.email ? 'is-invalid' : ''}`}
-                          placeholder="example@email.com"
-                          name="email"
-                          value={emailFormik.values.email}
-                          onChange={emailFormik.handleChange}
-                          onBlur={emailFormik.handleBlur}
-                          style={{ borderRadius: '0 12px 12px 0' }}
+                          type="text"
+                          className={`form-control bg-light border-0 shadow-none text-center fw-bold fs-4 py-3 ${codeFormik.touched.resetCode && codeFormik.errors.resetCode ? 'is-invalid' : ''}`}
+                          placeholder="000000"
+                          maxLength={6}
+                          name="resetCode"
+                          value={codeFormik.values.resetCode}
+                          onChange={codeFormik.handleChange}
+                          onBlur={codeFormik.handleBlur}
+                          style={{ borderRadius: '15px', letterSpacing: '8px' }}
                         />
-                        {emailFormik.touched.email && emailFormik.errors.email && (
-                          <div className="invalid-feedback">{emailFormik.errors.email}</div>
+                        {codeFormik.touched.resetCode && codeFormik.errors.resetCode && (
+                          <div className="invalid-feedback text-center">{codeFormik.errors.resetCode}</div>
                         )}
                       </div>
-                    </div>
-                    <button type="submit" className="btn btn-success w-100 rounded-pill py-3 fw-bold" disabled={loading}>
-                      {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : <i className="fas fa-paper-plane me-2"></i>}
-                      {loading ? 'جاري الإرسال...' : 'إرسال الرمز'}
-                    </button>
-                  </form>
-                )}
+                      <button type="submit" className="btn btn-success w-100 rounded-pill py-3 fw-bold mb-3 transition-200" disabled={loading} style={{ backgroundColor: '#0aad0a', border: 'none' }}>
+                        {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : <i className="fas fa-check me-2"></i>}
+                        {loading ? 'Verifying...' : 'Verify Code'}
+                      </button>
+                      <button type="button" className="btn btn-link text-success w-100 text-decoration-none small fw-bold" onClick={() => setStep(1)}>
+                        <i className="fas fa-arrow-left me-2"></i>Use different email
+                      </button>
+                    </form>
+                  )}
 
-                {/* Step 2 */}
-                {step === 2 && (
-                  <form onSubmit={codeFormik.handleSubmit}>
-                    <div className="mb-4">
-                      <label className="form-label fw-semibold">رمز التحقق (6 أرقام)</label>
-                      <input
-                        type="text"
-                        className={`form-control shadow-none text-center fw-bold fs-4 letter-spacing ${codeFormik.touched.resetCode && codeFormik.errors.resetCode ? 'is-invalid' : ''}`}
-                        placeholder="000000"
-                        maxLength={6}
-                        name="resetCode"
-                        value={codeFormik.values.resetCode}
-                        onChange={codeFormik.handleChange}
-                        onBlur={codeFormik.handleBlur}
-                        style={{ borderRadius: '12px', letterSpacing: '8px' }}
-                      />
-                      {codeFormik.touched.resetCode && codeFormik.errors.resetCode && (
-                        <div className="invalid-feedback text-center">{codeFormik.errors.resetCode}</div>
-                      )}
-                    </div>
-                    <button type="submit" className="btn btn-success w-100 rounded-pill py-3 fw-bold mb-3" disabled={loading}>
-                      {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : <i className="fas fa-check me-2"></i>}
-                      {loading ? 'جاري التحقق...' : 'تحقق من الرمز'}
-                    </button>
-                    <button type="button" className="btn btn-link text-success w-100" onClick={() => setStep(1)}>
-                      <i className="fas fa-arrow-right me-2"></i>تغيير البريد الإلكتروني
-                    </button>
-                  </form>
-                )}
-
-                {/* Step 3 */}
-                {step === 3 && (
-                  <form onSubmit={passwordFormik.handleSubmit}>
-                    <div className="mb-3">
-                      <label className="form-label fw-semibold">كلمة المرور الجديدة</label>
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-end-0" style={{ borderRadius: '12px 0 0 12px' }}>
-                          <i className="fas fa-lock text-muted"></i>
-                        </span>
-                        <input
-                          type="password"
-                          className={`form-control shadow-none border-start-0 ${passwordFormik.touched.newPassword && passwordFormik.errors.newPassword ? 'is-invalid' : ''}`}
-                          placeholder="••••••••"
-                          name="newPassword"
-                          value={passwordFormik.values.newPassword}
-                          onChange={passwordFormik.handleChange}
-                          onBlur={passwordFormik.handleBlur}
-                          style={{ borderRadius: '0 12px 12px 0' }}
-                        />
-                        {passwordFormik.touched.newPassword && passwordFormik.errors.newPassword && (
-                          <div className="invalid-feedback">{passwordFormik.errors.newPassword}</div>
-                        )}
+                  {step === 3 && (
+                    <form onSubmit={passwordFormik.handleSubmit}>
+                      <div className="mb-4">
+                        <label className="form-label fw-bold text-dark mb-2">New Password</label>
+                        <div className="input-group">
+                          <span className="input-group-text bg-light border-0 px-3" style={{ borderTopLeftRadius: '15px', borderBottomLeftRadius: '15px' }}>
+                            <i className="fas fa-lock text-muted"></i>
+                          </span>
+                          <input
+                            type="password"
+                            className={`form-control bg-light border-0 shadow-none py-3 ${passwordFormik.touched.newPassword && passwordFormik.errors.newPassword ? 'is-invalid' : ''}`}
+                            placeholder="••••••••"
+                            name="newPassword"
+                            value={passwordFormik.values.newPassword}
+                            onChange={passwordFormik.handleChange}
+                            onBlur={passwordFormik.handleBlur}
+                            style={{ borderTopRightRadius: '15px', borderBottomRightRadius: '15px' }}
+                          />
+                          {passwordFormik.touched.newPassword && passwordFormik.errors.newPassword && (
+                            <div className="invalid-feedback ps-2">{passwordFormik.errors.newPassword}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="mb-4">
-                      <label className="form-label fw-semibold">تأكيد كلمة المرور</label>
-                      <div className="input-group">
-                        <span className="input-group-text bg-light border-end-0" style={{ borderRadius: '12px 0 0 12px' }}>
-                          <i className="fas fa-lock text-muted"></i>
-                        </span>
-                        <input
-                          type="password"
-                          className={`form-control shadow-none border-start-0 ${passwordFormik.touched.confirmPassword && passwordFormik.errors.confirmPassword ? 'is-invalid' : ''}`}
-                          placeholder="••••••••"
-                          name="confirmPassword"
-                          value={passwordFormik.values.confirmPassword}
-                          onChange={passwordFormik.handleChange}
-                          onBlur={passwordFormik.handleBlur}
-                          style={{ borderRadius: '0 12px 12px 0' }}
-                        />
-                        {passwordFormik.touched.confirmPassword && passwordFormik.errors.confirmPassword && (
-                          <div className="invalid-feedback">{passwordFormik.errors.confirmPassword}</div>
-                        )}
+                      <div className="mb-4">
+                        <label className="form-label fw-bold text-dark mb-2">Confirm Password</label>
+                        <div className="input-group">
+                          <span className="input-group-text bg-light border-0 px-3" style={{ borderTopLeftRadius: '15px', borderBottomLeftRadius: '15px' }}>
+                            <i className="fas fa-lock text-muted"></i>
+                          </span>
+                          <input
+                            type="password"
+                            className={`form-control bg-light border-0 shadow-none py-3 ${passwordFormik.touched.confirmPassword && passwordFormik.errors.confirmPassword ? 'is-invalid' : ''}`}
+                            placeholder="••••••••"
+                            name="confirmPassword"
+                            value={passwordFormik.values.confirmPassword}
+                            onChange={passwordFormik.handleChange}
+                            onBlur={passwordFormik.handleBlur}
+                            style={{ borderTopRightRadius: '15px', borderBottomRightRadius: '15px' }}
+                          />
+                          {passwordFormik.touched.confirmPassword && passwordFormik.errors.confirmPassword && (
+                            <div className="invalid-feedback ps-2">{passwordFormik.errors.confirmPassword}</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <button type="submit" className="btn btn-success w-100 rounded-pill py-3 fw-bold" disabled={loading}>
-                      {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : <i className="fas fa-key me-2"></i>}
-                      {loading ? 'جاري الحفظ...' : 'حفظ كلمة المرور'}
-                    </button>
-                  </form>
-                )}
+                      <button type="submit" className="btn btn-success w-100 rounded-pill py-3 fw-bold transition-200" disabled={loading} style={{ backgroundColor: '#0aad0a', border: 'none' }}>
+                        {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : <i className="fas fa-key me-2"></i>}
+                        {loading ? 'Saving...' : 'Reset Password'}
+                      </button>
+                    </form>
+                  )}
+                </div>
 
-                <div className="text-center mt-3">
-                  <Link to="/login" className="text-muted text-decoration-none small">
-                    <i className="fas fa-arrow-right me-1"></i>العودة لتسجيل الدخول
+                <div className="text-center pt-3 border-top">
+                  <Link to="/login" className="text-muted text-decoration-none small fw-bold">
+                    <i className="fas fa-arrow-left me-2"></i>Back to Sign In
                   </Link>
                 </div>
               </div>
@@ -243,28 +243,32 @@ export default function ForgotPassword() {
 
       <style>{`
         .step-icon {
-          width: 70px; height: 70px;
+          width: 80px; height: 80px;
           border-radius: 50%;
-          background: #f0fdf0;
+          background: #f0fdf4;
           display: flex; align-items: center; justify-content: center;
           margin: 0 auto;
         }
         .step-circle {
-          width: 36px; height: 36px;
+          width: 42px; height: 42px;
           border-radius: 50%;
-          background: #e9ecef;
-          color: #636e72;
+          background: #fff;
+          color: #64748b;
+          border: 2px solid #e2e8f0;
           display: flex; align-items: center; justify-content: center;
-          font-weight: 700; font-size: 0.9rem;
-          transition: all 0.3s;
+          font-weight: 700; font-size: 1rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 2;
         }
-        .step-circle.active { background: #0aad0a; color: white; box-shadow: 0 4px 12px rgba(10,173,10,0.3); }
+        .step-circle.active { background: #0aad0a; color: white !important; border-color: #0aad0a; box-shadow: 0 4px 12px rgba(10,173,10,0.25); }
         .step-line {
-          height: 3px; width: 40px;
+          height: 3px; width: 60px;
           border-radius: 2px;
-          transition: background 0.3s;
-          margin-bottom: 20px;
+          margin-bottom: 24px;
+          z-index: 1;
         }
+        .transition-200 { transition: all 0.2s ease; }
+        .transition-200:hover { opacity: 0.9; transform: translateY(-2px); }
       `}</style>
     </div>
   );

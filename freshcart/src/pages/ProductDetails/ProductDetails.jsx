@@ -46,34 +46,34 @@ export default function ProductDetails() {
   }, [id]);
 
   async function handleAddToCart() {
-    if (!isAuthenticated) { toast.error('يجب تسجيل الدخول أولاً'); return; }
+    if (!isAuthenticated) { toast.error('Please login first'); return; }
     setAddingCart(true);
     try {
       await dispatch(addToCart(product._id)).unwrap();
-      toast.success('تمت الإضافة إلى السلة ✓');
+      toast.success('Successfully added to cart ✓');
     } catch (err) {
-      toast.error(err || 'حدث خطأ');
+      toast.error(err || 'Something went wrong');
     } finally {
       setAddingCart(false);
     }
   }
 
   async function handleWishlist() {
-    if (!isAuthenticated) { toast.error('يجب تسجيل الدخول أولاً'); return; }
+    if (!isAuthenticated) { toast.error('Please login first'); return; }
     if (isWishlisted) {
       await dispatch(removeFromWishlist(product._id));
-      toast.success('تمت الإزالة من المفضلة');
+      toast.success('Removed from wishlist');
     } else {
       await dispatch(addToWishlist(product._id));
-      toast.success('تمت الإضافة للمفضلة ❤');
+      toast.success('Added to wishlist ❤');
     }
   }
 
   if (loading) return <Loading />;
   if (!product) return (
     <div className="text-center py-5">
-      <h3 className="text-muted">المنتج غير موجود</h3>
-      <Link to="/products" className="btn btn-success mt-3">العودة للمنتجات</Link>
+      <h3 className="text-muted">Product not found</h3>
+      <Link to="/products" className="btn btn-success mt-3 rounded-pill px-4">Back to Shop</Link>
     </div>
   );
 
@@ -87,9 +87,9 @@ export default function ProductDetails() {
         {/* Breadcrumb */}
         <nav aria-label="breadcrumb" className="mb-4">
           <ol className="breadcrumb">
-            <li className="breadcrumb-item"><Link to="/" className="text-success text-decoration-none">الرئيسية</Link></li>
-            <li className="breadcrumb-item"><Link to="/products" className="text-success text-decoration-none">المنتجات</Link></li>
-            <li className="breadcrumb-item active text-truncate" style={{ maxWidth: '200px' }}>{product.title}</li>
+            <li className="breadcrumb-item"><Link to="/" className="text-success text-decoration-none small fw-bold">Home</Link></li>
+            <li className="breadcrumb-item"><Link to="/products" className="text-success text-decoration-none small fw-bold">Products</Link></li>
+            <li className="breadcrumb-item active small text-truncate" style={{ maxWidth: '200px' }}>{product.title}</li>
           </ol>
         </nav>
 
@@ -97,17 +97,17 @@ export default function ProductDetails() {
           {/* Images */}
           <div className="col-lg-5">
             <div className="product-detail-imgs">
-              <div className="main-img-wrap mb-3">
+              <div className="main-img-wrap mb-3 position-relative rounded-4 overflow-hidden shadow-sm border">
                 {discount && (
-                  <span className="badge bg-danger position-absolute top-0 start-0 m-3 rounded-pill fs-6">
-                    -{discount}%
+                  <span className="badge bg-danger position-absolute top-0 start-0 m-3 rounded-pill fs-6 px-3 z-3">
+                    -{discount}% OFF
                   </span>
                 )}
                 <img
                   src={allImages[selectedImg]}
                   alt={product.title}
-                  className="img-fluid w-100 rounded-3"
-                  style={{ maxHeight: '450px', objectFit: 'contain', background: '#f8f9fa' }}
+                  className="img-fluid w-100"
+                  style={{ maxHeight: '500px', objectFit: 'contain', background: '#fff' }}
                   onError={e => { e.target.src = 'https://via.placeholder.com/400x400?text=No+Image'; }}
                 />
               </div>
@@ -118,13 +118,13 @@ export default function ProductDetails() {
                     src={img}
                     alt=""
                     onClick={() => setSelectedImg(i)}
-                    className="thumb-img rounded-2"
+                    className="thumb-img rounded-3"
                     style={{
-                      width: '70px', height: '70px', objectFit: 'cover', cursor: 'pointer',
-                      border: i === selectedImg ? '2px solid #0aad0a' : '2px solid transparent',
+                      width: '75px', height: '75px', objectFit: 'cover', cursor: 'pointer',
+                      border: i === selectedImg ? '2px solid #0aad0a' : '2px solid #eee',
                       opacity: i === selectedImg ? 1 : 0.6, transition: 'all 0.2s'
                     }}
-                    onError={e => { e.target.src = 'https://via.placeholder.com/70?text=N/A'; }}
+                    onError={e => { e.target.src = 'https://via.placeholder.com/75?text=N/A'; }}
                   />
                 ))}
               </div>
@@ -133,97 +133,114 @@ export default function ProductDetails() {
 
           {/* Info */}
           <div className="col-lg-7">
-            <span className="badge rounded-pill mb-2" style={{ background: '#e8f5e9', color: '#0aad0a', fontSize: '0.85rem' }}>
-              {product.category?.name}
-            </span>
-            <h1 className="fw-bold mb-3" style={{ color: '#1a1a2e', fontSize: '1.6rem', lineHeight: 1.4 }}>
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <span className="badge rounded-pill px-3 py-2" style={{ background: '#f0fdf4', color: '#0aad0a', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.5px' }}>
+                {product.category?.name?.toUpperCase()}
+              </span>
+              {product.sold > 100 && <span className="badge bg-warning text-dark rounded-pill px-3 py-2" style={{ fontSize: '0.75rem', fontWeight: '700' }}>BEST SELLER</span>}
+            </div>
+            
+            <h1 className="fw-bold mb-3 display-6" style={{ color: '#1a1a2e', lineHeight: 1.3 }}>
               {product.title}
             </h1>
 
+            {/* Rating */}
+            <div className="d-flex align-items-center gap-3 mb-4 pb-2 border-bottom">
+              <div className="d-flex align-items-center gap-1">
+                {[1, 2, 3, 4, 5].map(s => (
+                  <i key={s} className={`fa-star ${s <= Math.round(product.ratingsAverage) ? 'fas' : 'far'}`}
+                    style={{ color: '#ffc107', fontSize: '0.9rem' }}></i>
+                ))}
+                <span className="ms-2 fw-bold" style={{ color: '#1a1a2e' }}>{product.ratingsAverage?.toFixed(1)}</span>
+              </div>
+              <span className="text-muted small">({product.ratingsQuantity} reviews)</span>
+              <span className="text-muted small">•</span>
+              <span className="text-success small fw-bold">{product.sold} sold</span>
+            </div>
+
             {/* Brand */}
             {product.brand && (
-              <p className="text-muted mb-2">
-                <span className="fw-semibold">الماركة:</span> {product.brand.name}
+              <p className="mb-4">
+                <span className="text-muted small fw-600">Brand:</span> 
+                <span className="ms-2 fw-bold text-dark">{product.brand.name}</span>
               </p>
             )}
 
-            {/* Rating */}
-            <div className="d-flex align-items-center gap-2 mb-3">
-              <div className="stars">
-                {[1, 2, 3, 4, 5].map(s => (
-                  <i key={s} className={`fa-${s <= Math.round(product.ratingsAverage) ? 'solid' : 'regular'} fa-star`}
-                    style={{ color: '#f39c12' }}></i>
-                ))}
-              </div>
-              <span className="fw-bold" style={{ color: '#f39c12' }}>{product.ratingsAverage?.toFixed(1)}</span>
-              <span className="text-muted">({product.ratingsQuantity} تقييم)</span>
-              {product.sold > 0 && <span className="text-muted">· {product.sold} مبيع</span>}
-            </div>
-
             {/* Price */}
-            <div className="price-section mb-4 p-3 rounded-3" style={{ background: '#f8f9fa' }}>
-              <div className="d-flex align-items-baseline gap-3">
-                <span className="fw-bold text-success" style={{ fontSize: '2rem' }}>
-                  {product.priceAfterDiscount || product.price} <small style={{ fontSize: '1rem' }}>جنيه</small>
+            <div className="price-card mb-4 p-4 rounded-4" style={{ background: '#f8fafc', border: '1px solid #f1f5f9' }}>
+              <div className="d-flex align-items-center gap-3">
+                <span className="fw-bold text-success" style={{ fontSize: '2.4rem' }}>
+                  {product.priceAfterDiscount || product.price} <small style={{ fontSize: '1rem' }}>EGP</small>
                 </span>
                 {product.priceAfterDiscount && (
-                  <span className="text-muted text-decoration-line-through fs-5">{product.price} جنيه</span>
+                  <span className="text-muted text-decoration-line-through fs-5">{product.price} EGP</span>
                 )}
-                {discount && (
-                  <span className="badge bg-danger rounded-pill">توفير {product.price - product.priceAfterDiscount} جنيه</span>
+                {product.priceAfterDiscount && (
+                  <span className="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">You Save {product.price - product.priceAfterDiscount} EGP</span>
                 )}
               </div>
+              <p className="small text-muted mt-2 mb-0"><i className="fas fa-info-circle me-1"></i> Inclusive of all taxes</p>
             </div>
 
             {/* Description */}
-            <p className="text-muted mb-4" style={{ lineHeight: 2 }}>{product.description}</p>
+            <div className="mb-4">
+              <h6 className="fw-bold text-dark mb-2">Product Description</h6>
+              <p className="text-muted" style={{ lineHeight: 1.8, fontSize: '0.95rem' }}>{product.description}</p>
+            </div>
 
-            {/* Quantity */}
-            <div className="d-flex align-items-center gap-3 mb-4">
-              <label className="fw-semibold">الكمية:</label>
-              <div className="input-group" style={{ width: '130px' }}>
-                <button className="btn btn-outline-secondary" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
-                <input type="number" className="form-control text-center border-secondary shadow-none" value={quantity} readOnly />
-                <button className="btn btn-outline-secondary" onClick={() => setQuantity(q => q + 1)}>+</button>
+            {/* Quantity & Actions */}
+            <div className="row g-3 align-items-center mb-5">
+              <div className="col-auto">
+                <div className="quantity-toggle d-flex align-items-center border rounded-pill p-1 bg-white shadow-sm">
+                  <button className="btn btn-sm btn-link text-dark text-decoration-none px-3" onClick={() => setQuantity(q => Math.max(1, q - 1))}><i className="fas fa-minus small"></i></button>
+                  <span className="fw-bold px-2" style={{ minWidth: '30px', textAlign: 'center' }}>{quantity}</span>
+                  <button className="btn btn-sm btn-link text-dark text-decoration-none px-3" onClick={() => setQuantity(q => q + 1)}><i className="fas fa-plus small"></i></button>
+                </div>
+              </div>
+              <div className="col">
+                <button
+                  className="btn btn-success rounded-pill w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm transition-300"
+                  onClick={handleAddToCart}
+                  disabled={addingCart}
+                  style={{ fontSize: '1.1rem' }}
+                >
+                  {addingCart
+                    ? <><span className="spinner-border spinner-border-sm"></span> Processing...</>
+                    : <><i className="fas fa-shopping-basket"></i> Add to Cart</>
+                  }
+                </button>
+              </div>
+              <div className="col-auto">
+                <button
+                  className="btn btn-outline-light border rounded-pill p-3 shadow-sm transition-300"
+                  onClick={handleWishlist}
+                  style={{ color: isWishlisted ? '#ef4444' : '#64748b', borderColor: '#e2e8f0', background: isWishlisted ? '#fef2f2' : '#fff' }}
+                >
+                  <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart fs-5`}></i>
+                </button>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="d-flex gap-3 flex-wrap">
-              <button
-                className="btn btn-success rounded-pill px-5 py-2 fw-bold flex-grow-1"
-                onClick={handleAddToCart}
-                disabled={addingCart}
-              >
-                {addingCart
-                  ? <><span className="spinner-border spinner-border-sm me-2"></span>جاري الإضافة...</>
-                  : <><i className="fas fa-cart-plus me-2"></i>أضف للسلة</>
-                }
-              </button>
-              <button
-                className="btn rounded-pill px-4 py-2"
-                onClick={handleWishlist}
-                style={{ border: '2px solid', borderColor: isWishlisted ? '#e74c3c' : '#dee2e6', color: isWishlisted ? '#e74c3c' : '#636e72' }}
-              >
-                <i className={`fa-${isWishlisted ? 'solid' : 'regular'} fa-heart me-2`}></i>
-                {isWishlisted ? 'في المفضلة' : 'أضف للمفضلة'}
-              </button>
-            </div>
-
-            {/* Delivery Info */}
-            <div className="mt-4 p-3 rounded-3 border" style={{ borderColor: '#e9ecef !important' }}>
-              <div className="row g-2 text-center">
+            {/* Service Highlights */}
+            <div className="p-4 rounded-4 bg-white border shadow-sm">
+              <div className="row g-4 text-center">
                 <div className="col-4">
-                  <i className="fas fa-truck text-success d-block mb-1"></i>
-                  <small className="text-muted">توصيل مجاني</small>
+                  <div className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{ width: '45px', height: '45px' }}>
+                    <i className="fas fa-truck"></i>
+                  </div>
+                  <small className="fw-bold d-block">Free Delivery</small>
                 </div>
                 <div className="col-4">
-                  <i className="fas fa-shield-halved text-success d-block mb-1"></i>
-                  <small className="text-muted">دفع آمن</small>
+                  <div className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{ width: '45px', height: '45px' }}>
+                    <i className="fas fa-shield-halved"></i>
+                  </div>
+                  <small className="fw-bold d-block">Secure Payment</small>
                 </div>
                 <div className="col-4">
-                  <i className="fas fa-rotate-left text-success d-block mb-1"></i>
-                  <small className="text-muted">إرجاع 14 يوم</small>
+                  <div className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style={{ width: '45px', height: '45px' }}>
+                    <i className="fas fa-rotate-left"></i>
+                  </div>
+                  <small className="fw-bold d-block">14-Day Returns</small>
                 </div>
               </div>
             </div>
@@ -232,10 +249,13 @@ export default function ProductDetails() {
 
         {/* Related Products */}
         {related.length > 0 && (
-          <section className="mt-5 pt-4" style={{ borderTop: '2px solid #f0f0f0' }}>
-            <h3 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>منتجات مشابهة</h3>
-            <div className="row g-3">
-              {related.slice(0, 4).map(p => (
+          <section className="mt-5 pt-5 border-top">
+            <div className="d-flex align-items-center gap-2 mb-4">
+              <div style={{ height: '30px', width: '5px', backgroundColor: '#0aad0a', borderRadius: '10px' }}></div>
+              <h3 className="fw-bold mb-0">Related <span className="text-success">Products</span></h3>
+            </div>
+            <div className="row g-4">
+              {related.map(p => (
                 <div key={p._id} className="col-6 col-md-4 col-lg-3">
                   <ProductCard product={p} />
                 </div>
@@ -244,6 +264,13 @@ export default function ProductDetails() {
           </section>
         )}
       </div>
+
+      <style>{`
+        .breadcrumb-item + .breadcrumb-item::before { content: "›"; color: #0aad0a; font-size: 1.2rem; }
+        .transition-300 { transition: all 0.3s ease; }
+        .transition-300:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important; }
+        .fw-600 { font-weight: 600; }
+      `}</style>
     </div>
   );
 }

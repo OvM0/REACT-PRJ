@@ -22,9 +22,9 @@ export default function Checkout() {
       city: '',
     },
     validationSchema: Yup.object({
-      details: Yup.string().required('العنوان مطلوب').min(10, 'العنوان قصير جداً'),
-      phone: Yup.string().required('رقم الهاتف مطلوب').matches(/^01[0125][0-9]{8}$/, 'رقم هاتف مصري غير صحيح'),
-      city: Yup.string().required('المدينة مطلوبة').min(3, 'اسم المدينة قصير جداً'),
+      details: Yup.string().required('Detailed address is required').min(10, 'Address is too short'),
+      phone: Yup.string().required('Phone number is required').matches(/^01[0125][0-9]{8}$/, 'Enter a valid Egyptian phone number'),
+      city: Yup.string().required('City is required').min(3, 'City name is too short'),
     }),
     onSubmit: async (values) => {
       setLoading(true);
@@ -37,7 +37,7 @@ export default function Checkout() {
             { headers: { token } }
           );
           if (data.status === 'success') {
-            toast.success('تم تقديم الطلب بنجاح!');
+            toast.success('Order placed successfully!');
             navigate('/allorders');
           }
         } else {
@@ -52,7 +52,7 @@ export default function Checkout() {
           }
         }
       } catch (err) {
-        toast.error(err.response?.data?.message || 'حدث خطأ، حاول مرة أخرى');
+        toast.error(err.response?.data?.message || 'Something went wrong, please try again');
       } finally {
         setLoading(false);
       }
@@ -67,9 +67,9 @@ export default function Checkout() {
             {/* Header */}
             <div className="text-center mb-5">
               <h1 className="fw-bold" style={{ color: '#1a1a2e' }}>
-                <i className="fas fa-lock me-2 text-success"></i>إتمام الطلب
+                <i className="fas fa-lock me-2 text-success"></i>Direct Checkout
               </h1>
-              <p className="text-muted">أكمل بياناتك وادفع بأمان</p>
+              <p className="text-muted">Complete your details and pay securely</p>
             </div>
 
             <div className="row g-4">
@@ -80,16 +80,16 @@ export default function Checkout() {
                   <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '20px' }}>
                     <div className="card-body p-4">
                       <h5 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>
-                        <i className="fas fa-map-marker-alt me-2 text-success"></i>بيانات الشحن
+                        <i className="fas fa-map-marker-alt me-2 text-success"></i>Shipping Details
                       </h5>
 
                       {/* Details */}
                       <div className="mb-3">
-                        <label className="form-label fw-semibold">العنوان التفصيلي</label>
+                        <label className="form-label fw-semibold">Detailed Address</label>
                         <textarea
                           className={`form-control shadow-none ${formik.touched.details && formik.errors.details ? 'is-invalid' : ''}`}
                           rows={3}
-                          placeholder="الشارع، المبنى، الدور..."
+                          placeholder="Street, Building, Floor..."
                           name="details"
                           value={formik.values.details}
                           onChange={formik.handleChange}
@@ -104,7 +104,7 @@ export default function Checkout() {
                       <div className="row g-3">
                         {/* Phone */}
                         <div className="col-md-6">
-                          <label className="form-label fw-semibold">رقم الهاتف</label>
+                          <label className="form-label fw-semibold">Phone Number</label>
                           <input
                             type="tel"
                             className={`form-control shadow-none ${formik.touched.phone && formik.errors.phone ? 'is-invalid' : ''}`}
@@ -122,11 +122,11 @@ export default function Checkout() {
 
                         {/* City */}
                         <div className="col-md-6">
-                          <label className="form-label fw-semibold">المدينة</label>
+                          <label className="form-label fw-semibold">City</label>
                           <input
                             type="text"
                             className={`form-control shadow-none ${formik.touched.city && formik.errors.city ? 'is-invalid' : ''}`}
-                            placeholder="القاهرة، الجيزة، الإسكندرية..."
+                            placeholder="Cairo, Alexandria, Giza..."
                             name="city"
                             value={formik.values.city}
                             onChange={formik.handleChange}
@@ -145,7 +145,7 @@ export default function Checkout() {
                   <div className="card border-0 shadow-sm mb-4" style={{ borderRadius: '20px' }}>
                     <div className="card-body p-4">
                       <h5 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>
-                        <i className="fas fa-credit-card me-2 text-success"></i>طريقة الدفع
+                        <i className="fas fa-credit-card me-2 text-success"></i>Payment Method
                       </h5>
 
                       <div className="row g-3">
@@ -155,8 +155,8 @@ export default function Checkout() {
                             onClick={() => setPaymentMethod('cash')}
                           >
                             <i className="fas fa-money-bill-wave fa-2x text-success mb-2"></i>
-                            <p className="fw-bold mb-0">الدفع عند الاستلام</p>
-                            <small className="text-muted">كاش عند التوصيل</small>
+                            <p className="fw-bold mb-0">Cash on Delivery</p>
+                            <small className="text-muted">Pay at your doorstep</small>
                           </div>
                         </div>
                         <div className="col-6">
@@ -165,7 +165,7 @@ export default function Checkout() {
                             onClick={() => setPaymentMethod('online')}
                           >
                             <i className="fas fa-credit-card fa-2x text-primary mb-2"></i>
-                            <p className="fw-bold mb-0">الدفع أونلاين</p>
+                            <p className="fw-bold mb-0">Online Payment</p>
                             <small className="text-muted">Visa / MasterCard</small>
                           </div>
                         </div>
@@ -179,11 +179,11 @@ export default function Checkout() {
                     disabled={loading}
                   >
                     {loading ? (
-                      <><span className="spinner-border spinner-border-sm me-2"></span>جاري المعالجة...</>
+                      <><span className="spinner-border spinner-border-sm me-2"></span>Processing...</>
                     ) : paymentMethod === 'cash' ? (
-                      <><i className="fas fa-check-circle me-2"></i>تأكيد الطلب</>
+                      <><i className="fas fa-check-circle me-2"></i>Confirm Order</>
                     ) : (
-                      <><i className="fas fa-lock me-2"></i>ادفع بأمان</>
+                      <><i className="fas fa-lock me-2"></i>Pay Securely</>
                     )}
                   </button>
                 </form>
@@ -194,43 +194,43 @@ export default function Checkout() {
                 <div className="card border-0 shadow-sm sticky-top" style={{ borderRadius: '20px', top: '80px' }}>
                   <div className="card-body p-4">
                     <h5 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>
-                      <i className="fas fa-receipt me-2 text-success"></i>ملخص الطلب
+                      <i className="fas fa-receipt me-2 text-success"></i>Order Summary
                     </h5>
 
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">المنتجات ({numOfCartItems})</span>
-                      <span className="fw-semibold">{totalPrice?.toLocaleString()} جنيه</span>
+                      <span className="text-muted">Items ({numOfCartItems})</span>
+                      <span className="fw-semibold">{totalPrice?.toLocaleString()} EGP</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">الشحن</span>
+                      <span className="text-muted">Shipping</span>
                       <span className="text-success fw-semibold">
-                        {totalPrice >= 500 ? 'مجاني' : '50 جنيه'}
+                        {totalPrice >= 500 ? 'Free' : '50 EGP'}
                       </span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">الضريبة</span>
-                      <span>0 جنيه</span>
+                      <span className="text-muted">Tax</span>
+                      <span>0 EGP</span>
                     </div>
                     <hr />
                     <div className="d-flex justify-content-between">
-                      <span className="fw-bold fs-5">الإجمالي</span>
+                      <span className="fw-bold fs-5">Total</span>
                       <span className="fw-bold fs-5 text-success">
-                        {(totalPrice + (totalPrice < 500 ? 50 : 0)).toLocaleString()} جنيه
+                        {(totalPrice + (totalPrice < 500 ? 50 : 0)).toLocaleString()} EGP
                       </span>
                     </div>
 
                     <div className="mt-4 p-3 rounded-3" style={{ background: '#f0fdf0' }}>
                       <div className="d-flex align-items-center gap-2 mb-2">
                         <i className="fas fa-shield-halved text-success"></i>
-                        <span className="small fw-semibold">دفع آمن ومشفر 100%</span>
+                        <span className="small fw-semibold">100% Secure & Encrypted</span>
                       </div>
                       <div className="d-flex align-items-center gap-2 mb-2">
                         <i className="fas fa-rotate-left text-success"></i>
-                        <span className="small fw-semibold">إرجاع مجاني خلال 14 يوم</span>
+                        <span className="small fw-semibold">14-Day Free Returns</span>
                       </div>
                       <div className="d-flex align-items-center gap-2">
                         <i className="fas fa-headset text-success"></i>
-                        <span className="small fw-semibold">دعم متواصل 24/7</span>
+                        <span className="small fw-semibold">24/7 Priority Support</span>
                       </div>
                     </div>
 

@@ -26,24 +26,26 @@ export default function Brands() {
   return (
     <div className="py-5">
       <div className="container">
-        {/* Header */}
+        {/* Page Header */}
         <div className="text-center mb-5">
-          <h1 className="fw-bold" style={{ color: '#1a1a2e', fontSize: '2.2rem' }}>
-            <i className="fas fa-award me-2 text-success"></i>الماركات العالمية
+          <h1 className="fw-bold mb-2" style={{ color: '#1a1a2e', fontSize: '2.5rem' }}>
+            <i className="fas fa-award me-2 text-success"></i>Global Brands
           </h1>
-          <p className="text-muted mt-2">اكتشف أشهر الماركات العالمية في مكان واحد</p>
-          <div style={{ width: '60px', height: '4px', background: '#0aad0a', borderRadius: '2px', margin: '16px auto 0' }}></div>
+          <p className="text-muted">Discover the world's most trusted brands all in one place</p>
+          <div style={{ width: '60px', height: '4px', background: '#0aad0a', borderRadius: '10px', margin: '1.5rem auto 0' }}></div>
         </div>
 
-        {/* Search */}
+        {/* Search Bar */}
         <div className="row justify-content-center mb-5">
-          <div className="col-md-5">
-            <div className="input-group">
-              <span className="input-group-text bg-white"><i className="fas fa-search text-muted"></i></span>
+          <div className="col-md-6 col-lg-5">
+            <div className="input-group shadow-sm rounded-pill overflow-hidden border">
+              <span className="input-group-text bg-white border-0 ps-4">
+                <i className="fas fa-search text-muted"></i>
+              </span>
               <input
                 type="text"
-                className="form-control shadow-none border-start-0"
-                placeholder="ابحث عن ماركة..."
+                className="form-control border-0 shadow-none py-3"
+                placeholder="Search for a brand..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
@@ -53,25 +55,26 @@ export default function Brands() {
 
         {filtered.length === 0 ? (
           <div className="text-center py-5">
-            <i className="fas fa-search fa-3x text-muted mb-3"></i>
-            <h5 className="text-muted">لا توجد ماركات مطابقة</h5>
+            <i className="fas fa-magnifying-glass fa-4x text-muted mb-4 opacity-25"></i>
+            <h5 className="text-muted fw-bold">No brands matching your search</h5>
+            <button className="btn btn-link text-success text-decoration-none" onClick={() => setSearch('')}>Clear search</button>
           </div>
         ) : (
-          <div className="row g-4">
+          <div className="row g-4 row-cols-2 row-cols-md-4 row-cols-lg-5 row-cols-xl-6">
             {filtered.map(brand => (
-              <div key={brand._id} className="col-6 col-md-4 col-lg-3 col-xl-2">
+              <div key={brand._id} className="col">
                 <Link to={`/brands/${brand._id}`} className="text-decoration-none">
-                  <div className="brand-card text-center">
-                    <div className="brand-img-wrap">
+                  <div className="brand-card h-100 d-flex flex-column align-items-center justify-content-center p-4 bg-white border border-light rounded-4 transition-300">
+                    <div className="brand-img-wrap mb-3 w-100 d-flex align-items-center justify-content-center" style={{ height: '80px' }}>
                       <img
                         src={brand.image}
                         alt={brand.name}
                         className="img-fluid"
-                        style={{ maxHeight: '90px', objectFit: 'contain' }}
-                        onError={e => { e.target.src = `https://via.placeholder.com/150x90?text=${brand.name}`; }}
+                        style={{ maxHeight: '100%', objectFit: 'contain', transition: 'transform 0.3s' }}
+                        onError={e => { e.target.src = `https://via.placeholder.com/150x80?text=${brand.name}`; }}
                       />
                     </div>
-                    <p className="fw-semibold mt-2 mb-0 text-dark" style={{ fontSize: '0.9rem' }}>
+                    <p className="fw-bold mb-0 text-dark small text-center transition-200">
                       {brand.name}
                     </p>
                   </div>
@@ -83,25 +86,16 @@ export default function Brands() {
       </div>
 
       <style>{`
-        .brand-card {
-          background: #fff;
-          border: 2px solid #f0f0f0;
-          border-radius: 16px;
-          padding: 20px 16px;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
+        .brand-card { cursor: pointer; border-width: 2px !important; }
         .brand-card:hover {
-          border-color: #0aad0a;
-          transform: translateY(-5px);
-          box-shadow: 0 15px 30px rgba(10,173,10,0.12);
+          border-color: #0aad0a !important;
+          transform: translateY(-8px);
+          box-shadow: 0 15px 35px rgba(10,173,10,0.08) !important;
         }
-        .brand-img-wrap {
-          height: 90px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+        .brand-card:hover img { transform: scale(1.1); }
+        .brand-card:hover p { color: #0aad0a !important; }
+        .transition-300 { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .transition-200 { transition: all 0.2s ease; }
       `}</style>
     </div>
   );

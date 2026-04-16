@@ -48,36 +48,34 @@ export default function Products() {
         {/* Page Header */}
         <div className="mb-4">
           <h1 className="fw-bold" style={{ color: '#1a1a2e' }}>
-            <i className="fas fa-store me-2 text-success"></i>المنتجات
+            <i className="fas fa-store me-2 text-success"></i>All Products
           </h1>
-          <p className="text-muted">اكتشف تشكيلتنا الواسعة من المنتجات</p>
+          <p className="text-muted">Discover our wide range of fresh and quality products</p>
         </div>
 
         {/* Filters */}
         <div className="row g-3 mb-4 align-items-center">
           <div className="col-md-5">
             <div className="input-group">
-              <span className="input-group-text bg-white border-end-0">
+              <span className="input-group-text bg-white border-end-0 rounded-start-pill ps-4">
                 <i className="fas fa-search text-muted"></i>
               </span>
               <input
                 type="text"
-                className="form-control border-start-0 shadow-none"
-                placeholder="ابحث عن منتج..."
+                className="form-control border-start-0 shadow-none rounded-end-pill py-2"
+                placeholder="Search for products..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                style={{ borderRadius: '0 10px 10px 0' }}
               />
             </div>
           </div>
           <div className="col-md-4">
             <select
-              className="form-select shadow-none"
+              className="form-select shadow-none rounded-pill px-4 py-2"
               value={selectedCategory}
               onChange={e => { setSelectedCategory(e.target.value); setPage(1); }}
-              style={{ borderRadius: '10px' }}
             >
-              <option value="">كل الفئات</option>
+              <option value="">All Categories</option>
               {categories.map(cat => (
                 <option key={cat._id} value={cat._id}>{cat.name}</option>
               ))}
@@ -85,24 +83,23 @@ export default function Products() {
           </div>
           <div className="col-md-3">
             <select
-              className="form-select shadow-none"
+              className="form-select shadow-none rounded-pill px-4 py-2"
               value={sortBy}
               onChange={e => { setSortBy(e.target.value); setPage(1); }}
-              style={{ borderRadius: '10px' }}
             >
-              <option value="">الترتيب الافتراضي</option>
-              <option value="-price">السعر: الأعلى أولاً</option>
-              <option value="price">السعر: الأقل أولاً</option>
-              <option value="-ratingsAverage">الأعلى تقييماً</option>
-              <option value="-sold">الأكثر مبيعاً</option>
+              <option value="">Default Sorting</option>
+              <option value="-price">Price: High to Low</option>
+              <option value="price">Price: Low to High</option>
+              <option value="-ratingsAverage">Highest Rated</option>
+              <option value="-sold">Best Selling</option>
             </select>
           </div>
         </div>
 
         {/* Results Count */}
         {!loading && (
-          <p className="text-muted mb-3">
-            عرض <span className="fw-bold text-success">{filtered.length}</span> منتج
+          <p className="text-muted mb-3 small">
+            Displaying <span className="fw-bold text-success">{filtered.length}</span> products
           </p>
         )}
 
@@ -110,12 +107,12 @@ export default function Products() {
           <Loading />
         ) : filtered.length === 0 ? (
           <div className="text-center py-5">
-            <i className="fas fa-search fa-4x text-muted mb-3"></i>
-            <h4 className="text-muted">لا توجد منتجات مطابقة</h4>
+            <i className="fas fa-search fa-4x text-muted mb-3 opacity-25"></i>
+            <h4 className="text-muted">No matching products found</h4>
           </div>
         ) : (
           <>
-            <div className="row g-3">
+            <div className="row g-4">
               {filtered.map(product => (
                 <div key={product._id} className="col-6 col-md-4 col-lg-3">
                   <ProductCard product={product} />
@@ -127,23 +124,34 @@ export default function Products() {
             {totalPages > 1 && (
               <div className="d-flex justify-content-center mt-5">
                 <nav>
-                  <ul className="pagination">
+                  <ul className="pagination gap-1">
                     <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
-                      <button className="page-link" onClick={() => setPage(p => p - 1)}>
-                        <i className="fas fa-chevron-right"></i>
+                      <button className="page-link rounded-circle border-0 d-flex align-items-center justify-content-center" 
+                        style={{ width: '40px', height: '40px' }}
+                        onClick={() => setPage(p => p - 1)}>
+                        <i className="fas fa-chevron-left"></i>
                       </button>
                     </li>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                       <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
-                        <button className="page-link" onClick={() => setPage(p)}
-                          style={p === page ? { background: '#0aad0a', borderColor: '#0aad0a' } : {}}>
+                        <button className="page-link rounded-circle border-0 d-flex align-items-center justify-content-center mx-1" 
+                          onClick={() => setPage(p)}
+                          style={{ 
+                            width: '40px', 
+                            height: '40px',
+                            background: p === page ? '#0aad0a' : '#f8f9fa',
+                            color: p === page ? 'white' : '#1a1a2e',
+                            fontWeight: '600'
+                          }}>
                           {p}
                         </button>
                       </li>
                     ))}
                     <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
-                      <button className="page-link" onClick={() => setPage(p => p + 1)}>
-                        <i className="fas fa-chevron-left"></i>
+                      <button className="page-link rounded-circle border-0 d-flex align-items-center justify-content-center" 
+                        style={{ width: '40px', height: '40px' }}
+                        onClick={() => setPage(p => p + 1)}>
+                        <i className="fas fa-chevron-right"></i>
                       </button>
                     </li>
                   </ul>

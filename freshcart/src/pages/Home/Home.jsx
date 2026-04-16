@@ -7,41 +7,37 @@ import './Home.css';
 
 const BASE = 'https://ecommerce.routemisr.com';
 
-const HERO_SLIDES = [
-  {
-    title: 'منتجات طازجة توصلها لبابك',
-    subtitle: 'احصل على خصم 20% على أول طلب',
-    bg: 'linear-gradient(135deg, #0aad0a 0%, #088a08 60%, #065e06 100%)',
-    img: 'https://ecommerce.routemisr.com/Route-Academy-categories/1681511179514.png',
-    badge: '⚡ خصم 20%',
-    btnLabel: 'تسوق الآن',
-    btnTo: '/products',
-  },
-  {
-    title: 'أحدث الماركات العالمية',
-    subtitle: 'اكتشف أحدث المنتجات بضمان الجودة',
-    bg: 'linear-gradient(135deg, #2d3436 0%, #1a1a2e 100%)',
-    img: 'https://ecommerce.routemisr.com/Route-Academy-categories/1681511121316.png',
-    badge: '🌟 وصل حديثاً',
-    btnLabel: 'تصفح الماركات',
-    btnTo: '/brands',
-  },
-  {
-    title: 'توصيل مجاني فوق 500 جنيه',
-    subtitle: 'توصيل في نفس اليوم للقاهرة والجيزة',
-    bg: 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)',
-    img: 'https://ecommerce.routemisr.com/Route-Academy-categories/1681511452254.png',
-    badge: '🚀 توصيل سريع',
-    btnLabel: 'اعرف أكثر',
-    btnTo: '/products',
-  },
+const DEPARTMENTS = [
+  { name: 'Dairy, Bread & Eggs', icon: 'fa-egg' },
+  { name: 'Snack & Munchies', icon: 'fa-cookie' },
+  { name: 'Fruits & Vegetables', icon: 'fa-apple-whole' },
+  { name: 'Cold Drinks & Juices', icon: 'fa-glass-water' },
+  { name: 'Breakfast & Instant Food', icon: 'fa-bowl-food' },
+  { name: 'Bakery & Biscuits', icon: 'fa-bread-slice' },
+  { name: 'Chicken, Meat & Fish', icon: 'fa-drumstick-bite' },
 ];
 
-const FEATURES = [
-  { icon: 'fa-truck-fast', title: 'توصيل مجاني', desc: 'على الطلبات فوق 500 جنيه', color: '#0aad0a' },
-  { icon: 'fa-shield-halved', title: 'دفع آمن', desc: 'حماية كاملة لبياناتك', color: '#3498db' },
-  { icon: 'fa-arrow-rotate-left', title: 'إرجاع سهل', desc: 'خلال 14 يوم من الاستلام', color: '#e67e22' },
-  { icon: 'fa-headset', title: 'دعم 24/7', desc: 'فريق دعم متواصل معك', color: '#9b59b6' },
+const HERO_SLIDES = [
+  {
+    title: 'Free Shipping on orders over $100',
+    subtitle: 'Free Shipping on orders over $100',
+    description: "Don't miss this opportunity to save more on your favorite products.",
+    bg: '#f0f3f2',
+    img: 'https://freshcart.codescandy.com/assets/images/slider/slider-image-1.jpg',
+    badge: 'Free Shipping',
+    btnLabel: 'Shop Now',
+    btnTo: '/products',
+  },
+  {
+    title: 'Get 25% Off on Fresh Fruits',
+    subtitle: 'Limited Time Offer',
+    description: 'Fresh from the farm to your doorstep. Stay healthy with our organic picks.',
+    bg: '#fdf5e6',
+    img: 'https://freshcart.codescandy.com/assets/images/slider/slider-image-2.jpg',
+    badge: 'Flat 25% Off',
+    btnLabel: 'Shop Now',
+    btnTo: '/products',
+  },
 ];
 
 export default function Home() {
@@ -53,7 +49,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setInterval(() => {
       setHeroSlide(s => (s + 1) % HERO_SLIDES.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(timer);
   }, []);
 
@@ -61,7 +57,7 @@ export default function Home() {
     async function fetchData() {
       try {
         const [prodRes, catRes] = await Promise.all([
-          axios.get(`${BASE}/api/v1/products?limit=8`),
+          axios.get(`${BASE}/api/v1/products?limit=10`),
           axios.get(`${BASE}/api/v1/categories`),
         ]);
         setProducts(prodRes.data.data || []);
@@ -75,111 +71,104 @@ export default function Home() {
     fetchData();
   }, []);
 
-  const slide = HERO_SLIDES[heroSlide];
-
   if (loading) return <Loading />;
 
   return (
     <div className="home-page">
-      {/* Hero Section */}
-      <section className="hero-section" style={{ background: slide.bg }}>
-        <div className="container">
-          <div className="row align-items-center min-vh-hero g-4">
-            <div className="col-lg-6 text-white">
-              <span className="hero-badge">{slide.badge}</span>
-              <h1 className="hero-title">{slide.title}</h1>
-              <p className="hero-subtitle">{slide.subtitle}</p>
-              <div className="d-flex gap-3 flex-wrap">
-                <Link to={slide.btnTo} className="btn btn-white-custom btn-lg rounded-pill px-4">
-                  <i className="fas fa-shopping-bag me-2"></i>{slide.btnLabel}
-                </Link>
-                <Link to="/categories" className="btn btn-outline-white btn-lg rounded-pill px-4">
-                  الفئات
-                </Link>
-              </div>
-              {/* Slide Indicators */}
-              <div className="slide-dots mt-4">
-                {HERO_SLIDES.map((_, i) => (
-                  <button key={i} className={`dot ${i === heroSlide ? 'active' : ''}`}
-                    onClick={() => setHeroSlide(i)} />
-                ))}
-              </div>
-            </div>
-            <div className="col-lg-6 text-center">
-              <div className="hero-img-wrap">
-                <img src={slide.img} alt="hero" className="hero-img img-fluid" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-4 bg-white shadow-sm">
-        <div className="container">
-          <div className="row g-3">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="col-6 col-md-3">
-                <div className="feature-card text-center p-3">
-                  <div className="feature-icon" style={{ background: f.color + '15', color: f.color }}>
-                    <i className={`fas ${f.icon} fa-xl`}></i>
-                  </div>
-                  <h6 className="fw-bold mt-2 mb-1">{f.title}</h6>
-                  <p className="text-muted small mb-0">{f.desc}</p>
+      {/* Hero Section - Exact Design */}
+      <section className="hero-full-width position-relative">
+        <div className="hero-slider-wrap rounded-0 overflow-hidden">
+          <div 
+            className="hero-slide-main d-flex align-items-center" 
+            style={{ 
+              backgroundImage: 'url(https://freshcart.codescandy.com/assets/images/slider/slider-image-1.jpg)', 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center',
+              minHeight: '480px'
+            }}
+          >
+            <div className="container">
+              <div className="hero-text-box" style={{ maxWidth: '600px', zIndex: 10 }}>
+                <h1 className="display-3 fw-bold mb-3 text-white">
+                  Fresh Products Delivered <br /> to your Door
+                </h1>
+                <p className="lead mb-4 fs-5 text-white opacity-90">
+                  Get 20% off your first order
+                </p>
+                <div className="d-flex gap-3">
+                  <Link to="/products" className="btn btn-light-custom btn-lg px-4 py-2 rounded-2 fw-bold" style={{ fontSize: '1rem' }}>
+                    Shop Now
+                  </Link>
+                  <Link to="/products" className="btn btn-outline-light-custom btn-lg px-4 py-2 rounded-2 fw-bold" style={{ fontSize: '1rem' }}>
+                    View Deals
+                  </Link>
                 </div>
               </div>
-            ))}
+            </div>
+            
+            {/* Nav Arrows */}
+            <button className="hero-nav-arrow start-arrow">
+              <i className="fas fa-chevron-left"></i>
+            </button>
+            <button className="hero-nav-arrow end-arrow">
+              <i className="fas fa-chevron-right"></i>
+            </button>
+
+            {/* Dots */}
+            <div className="hero-pagination-dots">
+              <span className="h-dot active"></span>
+              <span className="h-dot"></span>
+              <span className="h-dot"></span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-5">
+      {/* Features Section - Matches Screenshot */}
+      <section className="py-5 bg-light border-bottom">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">تسوق حسب الفئة</h2>
-            <Link to="/categories" className="btn btn-outline-success rounded-pill px-4">
-              عرض الكل <i className="fas fa-arrow-left ms-1"></i>
-            </Link>
-          </div>
-          <div className="row g-3">
-            {categories.slice(0, 6).map(cat => (
-              <div key={cat._id} className="col-6 col-md-4 col-lg-2">
-                <Link to={`/categories/${cat._id}`} className="text-decoration-none">
-                  <div className="category-card text-center">
-                    <div className="cat-img-wrap">
-                      <img src={cat.image} alt={cat.name} />
-                    </div>
-                    <p className="fw-semibold mt-2 mb-0 text-dark small">{cat.name}</p>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Promo Banners */}
-      <section className="py-4">
-        <div className="container">
-          <div className="row g-3">
-            <div className="col-md-6">
-              <div className="promo-banner" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+          <div className="row g-4">
+            <div className="col-md-3">
+              <div className="feature-card-new p-4 text-start bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
+                <div className="f-icon-wrap bg-primary-light text-primary">
+                  <i className="fas fa-truck-fast"></i>
+                </div>
                 <div>
-                  <span className="badge bg-white text-purple mb-2">🔥 عرض اليوم</span>
-                  <h4 className="text-white fw-bold">خصم 40% على الفاكهة الطازجة</h4>
-                  <p className="text-white-50 mb-3">استخدم كود: FRESH40</p>
-                  <Link to="/products" className="btn btn-white-promo">تسوق الآن</Link>
+                  <h6 className="fw-bold mb-1">Free Shipping</h6>
+                  <p className="small text-muted mb-0">On orders over 500 EGP</p>
                 </div>
               </div>
             </div>
-            <div className="col-md-6">
-              <div className="promo-banner" style={{ background: 'linear-gradient(135deg, #f093fb, #f5576c)' }}>
+            <div className="col-md-3">
+              <div className="feature-card-new p-4 text-start bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
+                <div className="f-icon-wrap bg-success-light text-success">
+                  <i className="fas fa-shield-alt"></i>
+                </div>
                 <div>
-                  <span className="badge bg-white text-pink mb-2">✨ وصل حديثاً</span>
-                  <h4 className="text-white fw-bold">خضروات فريدة من المزرعة</h4>
-                  <p className="text-white-50 mb-3">خصم 25% - كود: VEGGIE25</p>
-                  <Link to="/products" className="btn btn-white-promo">استكشف الآن</Link>
+                  <h6 className="fw-bold mb-1">Secure Payment</h6>
+                  <p className="small text-muted mb-0">100% secure transactions</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="feature-card-new p-4 text-start bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
+                <div className="f-icon-wrap bg-warning-light text-warning">
+                  <i className="fas fa-arrow-rotate-left"></i>
+                </div>
+                <div>
+                  <h6 className="fw-bold mb-1">Easy Returns</h6>
+                  <p className="small text-muted mb-0">14-day return policy</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="feature-card-new p-4 text-start bg-white rounded-3 shadow-sm d-flex align-items-center gap-3">
+                <div className="f-icon-wrap bg-purple-light text-purple">
+                  <i className="fas fa-headset"></i>
+                </div>
+                <div>
+                  <h6 className="fw-bold mb-1">24/7 Support</h6>
+                  <p className="small text-muted mb-0">Dedicated support team</p>
                 </div>
               </div>
             </div>
@@ -187,100 +176,225 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-5">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">منتجات مميزة</h2>
-            <Link to="/products" className="btn btn-outline-success rounded-pill px-4">
-              عرض الكل <i className="fas fa-arrow-left ms-1"></i>
-            </Link>
+      <div className="container py-5">
+        <div className="d-flex justify-content-between align-items-center mb-4 pb-2">
+          <div className="d-flex align-items-center gap-2">
+            <div style={{ height: '30px', width: '5px', backgroundColor: '#0aad0a', borderRadius: '10px' }}></div>
+            <h3 className="fw-bold mb-0">Shop By <span className="text-success">Category</span></h3>
           </div>
-          <div className="row g-3">
-            {products.map(product => (
-              <div key={product._id} className="col-6 col-md-4 col-lg-3">
+          <Link to="/categories" className="text-success text-decoration-none fw-bold" style={{ fontSize: '0.9rem' }}>
+            View All Categories <i className="fas fa-arrow-right ms-1"></i>
+          </Link>
+        </div>
+
+        <div className="row g-3 g-md-4 categories-grid-new">
+          {categories.slice(0, 10).map((cat) => (
+            <div key={cat._id} className="col-4 col-md-3 col-lg-2">
+              <Link to={`/products?category=${cat._id}`} className="text-decoration-none">
+                <div className="category-card-circle p-3 p-md-4 text-center bg-white rounded-3 shadow-sm h-100">
+                  <div className="cat-img-wrapper mb-3 mx-auto overflow-hidden rounded-circle bg-light d-flex align-items-center justify-content-center" style={{ width: '100px', height: '100px' }}>
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={e => { e.target.src = 'https://via.placeholder.com/150?text=' + cat.name; }}
+                    />
+                  </div>
+                  <h6 className="text-dark fw-bold mb-0 small text-truncate">{cat.name}</h6>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* Promo Banners - Exact Design Match */}
+        <div className="row g-4 mt-5">
+          <div className="col-md-6">
+            <div className="banner-promo-new p-5 rounded-4 d-flex flex-column h-100" style={{ background: 'linear-gradient(135deg, #0aad0a 0%, #088a08 100%)', color: 'white' }}>
+              <div className="mb-auto">
+                <span className="badge-glass mb-3 d-inline-block">
+                  <i className="fas fa-fire me-1 text-warning"></i> Deal of the Day
+                </span>
+                <h2 className="fw-bold mb-2 display-6">Fresh Organic Fruits</h2>
+                <p className="opacity-75 mb-4">Get up to 40% off on selected organic fruits</p>
+                <div className="mb-4">
+                  <span className="fs-3 fw-bold">40% OFF</span>
+                  <span className="ms-3 opacity-75 small">Use code: <span className="fw-bold">ORGANIC40</span></span>
+                </div>
+              </div>
+              <div>
+                <Link to="/products" className="btn btn-pill-white">
+                  Shop Now <i className="fas fa-arrow-right ms-2"></i>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="banner-promo-new p-5 rounded-4 d-flex flex-column h-100" style={{ background: 'linear-gradient(135deg, #ff6b3d 0%, #ff4d4d 100%)', color: 'white' }}>
+              <div className="mb-auto">
+                <span className="badge-glass mb-3 d-inline-block">
+                  <i className="fas fa-sparkles me-1 text-warning"></i> New Arrivals
+                </span>
+                <h2 className="fw-bold mb-2 display-6">Exotic Vegetables</h2>
+                <p className="opacity-75 mb-4">Discover our latest collection of premium vegetables</p>
+                <div className="mb-4">
+                  <span className="fs-3 fw-bold">25% OFF</span>
+                  <span className="ms-3 opacity-75 small">Use code: <span className="fw-bold">FRESH25</span></span>
+                </div>
+              </div>
+              <div>
+                <Link to="/products" className="btn btn-pill-white" style={{ color: '#ff6b3d' }}>
+                  Explore Now <i className="fas fa-arrow-right ms-2"></i>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Featured Products - Re-inserted Section */}
+        <div className="mt-5 pt-4">
+          <div className="d-flex align-items-center gap-2 mb-4 pb-1">
+            <div style={{ height: '30px', width: '5px', backgroundColor: '#0aad0a', borderRadius: '10px' }}></div>
+            <h3 className="fw-bold mb-0">Featured <span className="text-success">Products</span></h3>
+          </div>
+          <div className="row g-4">
+            {products.slice(0, 10).map(product => (
+              <div key={product._id} className="col-6 col-md-4 col-lg-3 col-xl-2.4">
                 <ProductCard product={product} />
               </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Newsletter + Mobile App Section */}
-      <section className="py-5 newsletter-section">
-        <div className="container">
-          <div className="newsletter-card">
-            <div className="row g-0 align-items-stretch">
-              {/* Newsletter */}
-              <div className="col-lg-7 newsletter-left p-5">
+        {/* Newsletter & Mobile App Section - High-Fidelity Match */}
+        <div className="mt-5 pt-5 mb-5">
+          <div className="newsletter-app-card p-4 p-md-5 rounded-5" style={{ background: '#f0fdf4' }}>
+            <div className="row g-4 align-items-center">
+              {/* Newsletter Left Side */}
+              <div className="col-lg-7 border-end-lg pe-lg-5">
                 <div className="d-flex align-items-center gap-3 mb-3">
-                  <div className="newsletter-icon">
-                    <i className="fas fa-envelope-open-text text-success fs-4"></i>
+                  <div className="bg-success text-white rounded-3 p-2 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px' }}>
+                    <i className="fas fa-envelope-open-text fs-5"></i>
                   </div>
                   <div>
-                    <div className="text-success fw-bold small text-uppercase">NEWSLETTER</div>
-                    <div className="text-muted small">50,000+ subscribers</div>
+                    <span className="text-success fw-bold small text-uppercase ls-wide">Newsletter</span>
+                    <p className="small text-muted mb-0">50,000+ subscribers</p>
                   </div>
                 </div>
-                <h3 className="fw-bold mb-2" style={{ color: '#1a1a2e', fontSize: '1.7rem' }}>
-                  Get the Freshest Updates <span className="text-success">Delivered Free</span>
-                </h3>
-                <p className="text-muted mb-4">Weekly recipes, seasonal offers &amp; exclusive member perks.</p>
+                
+                <h1 className="fw-bold mb-3 display-6">Get the Freshest Updates <span className="text-success">Delivered Free</span></h1>
+                <p className="text-muted mb-4 lead fs-6">Weekly recipes, seasonal offers & exclusive member perks.</p>
+                
                 <div className="d-flex flex-wrap gap-2 mb-4">
-                  {['Fresh Picks Weekly', 'Free Delivery Codes', 'Members-Only Deals'].map(tag => (
-                    <span key={tag} className="newsletter-tag">
-                      <i className="fas fa-check-circle text-success me-1"></i>{tag}
-                    </span>
-                  ))}
+                  <span className="badge-tag-custom"><i className="fas fa-leaf me-1"></i> Fresh Picks Weekly</span>
+                  <span className="badge-tag-custom"><i className="fas fa-truck me-1"></i> Free Delivery Codes</span>
+                  <span className="badge-tag-custom"><i className="fas fa-tag me-1"></i> Members-Only Deals</span>
                 </div>
-                <form className="newsletter-form" onSubmit={e => { e.preventDefault(); alert('Subscribed!'); }}>
-                  <input type="email" className="form-control newsletter-input shadow-none" placeholder="you@example.com" required />
-                  <button type="submit" className="btn btn-success newsletter-btn rounded-pill px-4 fw-bold">
-                    Subscribe <i className="fas fa-arrow-left ms-2"></i>
+
+                <form className="newsletter-form shadow-sm rounded-pill overflow-hidden bg-white p-1 d-flex">
+                  <input type="email" className="form-control border-0 px-4" placeholder="you@example.com" style={{ outline: 'none', boxShadow: 'none' }} />
+                  <button type="submit" className="btn btn-success rounded-pill px-4 py-2 d-flex align-items-center gap-2 m-1">
+                    Subscribe <i className="fas fa-arrow-right"></i>
                   </button>
                 </form>
-                <p className="text-muted mt-2" style={{ fontSize: '0.78rem' }}>
-                  <i className="fas fa-shield-halved text-success me-1"></i>
-                  Unsubscribe anytime. No spam, ever.
-                </p>
+                <p className="small text-muted mt-3 mb-0">✨ Unsubscribe anytime. No spam. ever.</p>
               </div>
 
-              {/* Mobile App */}
-              <div className="col-lg-5 app-right p-5 d-flex flex-column justify-content-center">
-                <div className="app-badge-top mb-3">
-                  <i className="fas fa-mobile-screen me-2"></i>MOBILE APP
-                </div>
-                <h4 className="fw-bold text-white mb-2">Shop Faster on Our App</h4>
-                <p className="mb-4" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem' }}>
-                  Get app-exclusive deals &amp; 15% off your first order.
-                </p>
-                <div className="d-flex flex-column gap-3">
-                  <a href="#" className="store-btn-app">
-                    <i className="fab fa-apple fs-3 me-3"></i>
-                    <div>
-                      <div style={{ fontSize: '0.7rem', opacity: 0.7 }}>DOWNLOAD ON</div>
-                      <div className="fw-bold">App Store</div>
-                    </div>
-                  </a>
-                  <a href="#" className="store-btn-app">
-                    <i className="fab fa-google-play fs-3 me-3"></i>
-                    <div>
-                      <div style={{ fontSize: '0.7rem', opacity: 0.7 }}>GET IT ON</div>
-                      <div className="fw-bold">Google Play</div>
-                    </div>
-                  </a>
-                </div>
-                <div className="mt-4 d-flex align-items-center gap-2">
-                  <div className="d-flex">
-                    {[1,2,3,4,5].map(s => <i key={s} className="fas fa-star" style={{ color: '#f39c12', fontSize: '0.85rem' }}></i>)}
+              {/* Mobile App Right Side */}
+              <div className="col-lg-5 ps-lg-5">
+                <div className="mobile-app-promo-card p-4 rounded-4 shadow-sm" style={{ background: 'linear-gradient(145deg, #1a1a2e 0%, #16213e 100%)', color: 'white' }}>
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <span className="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-2 py-1 small" style={{ fontSize: '0.65rem' }}>
+                      <i className="fas fa-mobile-alt me-1"></i> MOBILE APP
+                    </span>
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>4.9 · 100K+ downloads</span>
+                  
+                  <h3 className="fw-bold mb-2">Shop Faster on Our App</h3>
+                  <p className="small opacity-75 mb-4">Get app-exclusive deals & 15% off your first order.</p>
+                  
+                  <div className="d-flex flex-column gap-3">
+                    <button className="btn btn-app-store d-flex align-items-center gap-3 text-start">
+                      <i className="fab fa-apple fs-2"></i>
+                      <div>
+                        <span className="small d-block ls-wide opacity-50 text-uppercase">Download on</span>
+                        <span className="fw-bold">App Store</span>
+                      </div>
+                    </button>
+                    <button className="btn btn-app-store d-flex align-items-center gap-3 text-start">
+                      <i className="fab fa-google-play fs-4"></i>
+                      <div>
+                        <span className="small d-block ls-wide opacity-50 text-uppercase">Get it on</span>
+                        <span className="fw-bold">Google Play</span>
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="mt-4 pt-2 d-flex align-items-center gap-2">
+                    <div className="text-warning small d-flex gap-1">
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                    </div>
+                    <span className="small opacity-75">4.9 • 100K+ downloads</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+
+        {/* Secondary Services Footer Highlights - Exact Proximity */}
+        <div className="pt-4 pb-1">
+          <div className="row g-3 justify-content-center">
+            <div className="col-12 col-md-3">
+              <div className="service-footer-card d-flex align-items-center gap-3">
+                <div className="icon-bubble-new">
+                  <i className="fas fa-truck-fast"></i>
+                </div>
+                <div className="text-start">
+                  <h6 className="fw-bold mb-0" style={{ fontSize: '0.85rem' }}>Free Shipping</h6>
+                  <p className="small text-muted mb-0" style={{ fontSize: '0.65rem' }}>On orders over 500 EGP</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-md-3">
+              <div className="service-footer-card d-flex align-items-center gap-3">
+                <div className="icon-bubble-new">
+                  <i className="fas fa-arrow-rotate-left"></i>
+                </div>
+                <div className="text-start">
+                  <h6 className="fw-bold mb-0" style={{ fontSize: '0.85rem' }}>Easy Returns</h6>
+                  <p className="small text-muted mb-0" style={{ fontSize: '0.65rem' }}>14-day return policy</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-md-3">
+              <div className="service-footer-card d-flex align-items-center gap-3">
+                <div className="icon-bubble-new">
+                  <i className="fas fa-shield-alt"></i>
+                </div>
+                <div className="text-start">
+                  <h6 className="fw-bold mb-0" style={{ fontSize: '0.85rem' }}>Secure Payment</h6>
+                  <p className="small text-muted mb-0" style={{ fontSize: '0.65rem' }}>100% secure checkout</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-md-3">
+              <div className="service-footer-card d-flex align-items-center gap-3">
+                <div className="icon-bubble-new">
+                  <i className="fas fa-headset"></i>
+                </div>
+                <div className="text-start">
+                  <h6 className="fw-bold mb-0" style={{ fontSize: '0.85rem' }}>24/7 Support</h6>
+                  <p className="small text-muted mb-0" style={{ fontSize: '0.65rem' }}>Contact us anytime</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

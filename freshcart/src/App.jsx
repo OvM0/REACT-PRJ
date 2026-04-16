@@ -74,11 +74,11 @@ function App() {
           toastOptions={{
             duration: 3000,
             style: {
-              fontFamily: 'Cairo, sans-serif',
-              borderRadius: '10px',
+              fontFamily: 'Inter, sans-serif',
+              borderRadius: '12px',
             },
             success: { style: { background: '#0aad0a', color: '#fff' } },
-            error: { style: { background: '#e74c3c', color: '#fff' } },
+            error: { style: { background: '#dc2626', color: '#fff' } },
           }}
         />
       </Provider>
