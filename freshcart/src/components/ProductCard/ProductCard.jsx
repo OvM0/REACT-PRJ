@@ -66,13 +66,15 @@ export default function ProductCard({ product }) {
         </span>
       )}
 
-      {/* Floating Action Bar - Right Side - Visible by default as in screenshot */}
+      {/* Floating Action Bar - Right Side */}
       <div className="card-actions-float-exact">
         <button className="action-circle-btn-exact" onClick={handleWishlist} disabled={addingWish}>
           <i className={`fa-${isWishlisted ? 'solid' : 'regular'} fa-heart`} style={{ color: isWishlisted ? '#e74c3c' : '#adb5bd' }}></i>
         </button>
         <button className="action-circle-btn-exact"><i className="fas fa-arrows-rotate"></i></button>
-        <button className="action-circle-btn-exact"><i className="far fa-eye"></i></button>
+        <Link to={`/products/${product._id}`} className="action-circle-btn-exact text-decoration-none">
+          <i className="far fa-eye"></i>
+        </Link>
       </div>
 
       <Link to={`/products/${product._id}`} className="text-decoration-none h-100 d-flex flex-column">
@@ -154,4 +156,3 @@ export default function ProductCard({ product }) {
     </div>
   );
 }
-

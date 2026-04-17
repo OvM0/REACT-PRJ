@@ -60,11 +60,15 @@ export default function Categories() {
                     </div>
                   </div>
                   <div className="card-body text-center pt-0 pb-4">
-                    <h6 className="fw-bold text-dark mb-0 transition-200">{cat.name}</h6>
+                    <h6 className="fw-bold text-dark mb-0 transition-200">
+                      {cat.name === 'SuperMarket' ? 'Electronics' : 
+                       cat.name === 'Music' ? 'Health & Beauty' : 
+                       cat.name}
+                    </h6>
                     {/* Only show subcategories link if it's a special one - simulating design variation */}
                     {cat.name.includes('Super') && (
                       <div className="mt-2">
-                        <small className="text-success d-block fw-600">SuperMarket</small>
+                        <small className="text-success d-block fw-600">Electronics</small>
                         <small className="text-muted" style={{ fontSize: '0.7rem' }}>View Subcategories <i className="fas fa-arrow-right ms-1" style={{ fontSize: '0.6rem' }}></i></small>
                       </div>
                     )}

@@ -17,15 +17,15 @@ export default function Wishlist() {
   async function handleRemove(productId) {
     try {
       await dispatch(removeFromWishlist(productId)).unwrap();
-      toast.success('تمت الإزالة من المفضلة');
-    } catch { toast.error('حدث خطأ'); }
+      toast.success('Removed from wishlist');
+    } catch { toast.error('Error removing product'); }
   }
 
   async function handleAddToCart(productId) {
     try {
       await dispatch(addToCart(productId)).unwrap();
-      toast.success('تمت الإضافة للسلة ✓');
-    } catch (err) { toast.error(err || 'حدث خطأ'); }
+      toast.success('Added to cart ✓');
+    } catch (err) { toast.error(err || 'Error adding to cart'); }
   }
 
   if (loading) return <Loading />;
@@ -35,10 +35,10 @@ export default function Wishlist() {
       <div className="py-5">
         <div className="container text-center py-5">
           <i className="fas fa-heart-crack fa-5x mb-4" style={{ color: '#e74c3c', opacity: 0.3 }}></i>
-          <h2 className="fw-bold mb-2" style={{ color: '#1a1a2e' }}>قائمة الأمنيات فارغة</h2>
-          <p className="text-muted mb-4">أضف المنتجات التي تعجبك لتجدها هنا بسهولة</p>
+          <h2 className="fw-bold mb-2" style={{ color: '#1a1a2e' }}>Wishlist is empty</h2>
+          <p className="text-muted mb-4">Add products you like to find them here easily</p>
           <Link to="/products" className="btn btn-success rounded-pill px-5 py-2 fw-bold">
-            <i className="fas fa-store me-2"></i>تسوق الآن
+            <i className="fas fa-store me-2"></i>Shop Now
           </Link>
         </div>
       </div>
@@ -51,9 +51,9 @@ export default function Wishlist() {
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div>
             <h1 className="fw-bold mb-1" style={{ color: '#1a1a2e' }}>
-              <i className="fas fa-heart me-2 text-danger"></i>قائمة الأمنيات
+              <i className="fas fa-heart me-2 text-danger"></i>Wishlist
             </h1>
-            <p className="text-muted mb-0">{wishlistItems.length} منتج في قائمتك</p>
+            <p className="text-muted mb-0">{wishlistItems.length} products in your list</p>
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export default function Wishlist() {
                   <button
                     className="remove-wish-btn position-absolute"
                     onClick={() => handleRemove(product._id)}
-                    title="إزالة من المفضلة"
+                    title="Remove from wishlist"
                   >
                     <i className="fas fa-times"></i>
                   </button>
@@ -92,11 +92,7 @@ export default function Wishlist() {
                       <div className="d-flex align-items-center justify-content-between">
                         <div>
                           <span className="fw-bold text-success">
-                            {product.priceAfterDiscount || product.price} جنيه
-                          </span>
-                          {product.priceAfterDiscount && (
-                            <span className="text-muted text-decoration-line-through ms-2 small">
-                              {product.price} جنيه
+                            {product.price} EGP
                             </span>
                           )}
                         </div>
@@ -113,7 +109,7 @@ export default function Wishlist() {
                       className="btn btn-success w-100 rounded-pill btn-sm fw-semibold"
                       onClick={() => handleAddToCart(product._id)}
                     >
-                      <i className="fas fa-cart-plus me-2"></i>أضف للسلة
+                      <i className="fas fa-cart-plus me-2"></i>Add to Cart
                     </button>
                   </div>
                 </div>

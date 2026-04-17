@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import ProductCard from '../../components/ProductCard/ProductCard';
 import Loading from '../../components/Loading/Loading';
+import ProductCard from '../../components/ProductCard/ProductCard';
 
 const BASE = 'https://ecommerce.routemisr.com';
 
 export default function CategoryProducts() {
   const { id } = useParams();
   const [category, setCategory] = useState(null);
-  const [subcategories, setSubcategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,99 +16,109 @@ export default function CategoryProducts() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [catRes, subRes, prodRes] = await Promise.all([
+        const [catRes, prodRes] = await Promise.all([
           axios.get(`${BASE}/api/v1/categories/${id}`),
-          axios.get(`${BASE}/api/v1/categories/${id}/subcategories`),
-          axios.get(`${BASE}/api/v1/products?category=${id}&limit=20`),
+          axios.get(`${BASE}/api/v1/products?category=${id}`),
         ]);
         setCategory(catRes.data.data);
-        setSubcategories(subRes.data.data || []);
         setProducts(prodRes.data.data || []);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching category products:', err);
       } finally {
         setLoading(false);
       }
     }
     fetchData();
+    window.scrollTo(0, 0);
   }, [id]);
 
   if (loading) return <Loading />;
 
   return (
-    <div className="pb-5">
-      {/* Target Green Header Banner */}
-      <div className="category-header-banner py-5 mb-5" style={{ background: '#22c55e', color: 'white' }}>
-        <div className="container">
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb mb-4">
+    <div className="category-products-page bg-white min-vh-100">
+      {/* ── Green Banner Header ── */}
+      <div className="category-banner py-5 mb-5" style={{ background: '#0aad0a' }}>
+        <div className="container py-3">
+          <nav aria-label="breadcrumb" className="mb-4">
+            <ol className="breadcrumb mb-0 align-items-center">
               <li className="breadcrumb-item"><Link to="/" className="text-white opacity-75 text-decoration-none small">Home</Link></li>
               <li className="breadcrumb-item"><Link to="/categories" className="text-white opacity-75 text-decoration-none small">Categories</Link></li>
-              <li className="breadcrumb-item active text-white small" aria-current="page">{category?.name}</li>
+              <li className="breadcrumb-item active text-white small fw-bold" aria-current="page">{category?.name}</li>
             </ol>
           </nav>
 
-          <div className="d-flex align-items-center gap-4 mt-2">
-            <div className="category-icon-box bg-white bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center p-2" style={{ width: '60px', height: '60px' }}>
-              <img src={category?.image} alt="" className="img-fluid rounded-2 h-100" style={{ objectFit: 'cover' }} />
+          <div className="d-flex align-items-center gap-4">
+            <div className="bg-white rounded-4 p-3 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px' }}>
+              <img src={category?.image} alt={category?.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
-            <div>
+            <div className="text-white">
               <h1 className="fw-bold mb-1 display-5">{category?.name}</h1>
-              <p className="mb-0 opacity-75 lead fs-6">Choose a subcategory to browse products</p>
+              <p className="mb-0 opacity-75 fs-5">Browse products in {category?.name}</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container">
-        {/* Back Link */}
-        <div className="mb-4">
-          <Link to="/categories" className="text-decoration-none text-muted small d-flex align-items-center gap-2">
-            <i className="fas fa-arrow-left"></i> Back to Categories
-          </Link>
-        </div>
-
-        {/* Subcategories Grid */}
-        <div className="mb-5">
-          <h5 className="fw-bold mb-4">{subcategories.length} Subcategories in {category?.name}</h5>
-          <div className="row g-4">
-            {subcategories.map(sub => (
-              <div key={sub._id} className="col-12 col-md-4 col-lg-3">
-                <div className="subcategory-card bg-white border border-light rounded-4 shadow-sm p-4 h-100 transition-300">
-                  <div className="icon-folder-box bg-success bg-opacity-10 text-success rounded-3 d-flex align-items-center justify-content-center mb-3" style={{ width: '45px', height: '45px' }}>
-                    <i className="fas fa-folder-open fs-5"></i>
-                  </div>
-                  <h6 className="fw-bold mb-0">{sub.name}</h6>
-                </div>
-              </div>
-            ))}
+        {/* ── Active Filters Bar ── */}
+        <div className="active-filters-bar d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+          <div className="d-flex align-items-center gap-3">
+            <span className="text-muted small fw-bold text-uppercase ls-wide"><i className="fas fa-filter me-2"></i>Active Filters:</span>
+            <div className="filter-tag bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1 rounded-pill small d-flex align-items-center gap-2">
+              <i className="fas fa-grid-2 small"></i> {category?.name}
+              <Link to="/products" className="text-success text-decoration-none ms-1"><i className="fas fa-times"></i></Link>
+            </div>
+            <Link to="/products" className="text-muted small text-decoration-none ms-2">Clear all</Link>
+          </div>
+          <div className="text-muted small fw-semibold">
+            Showing <span className="text-dark fw-bold">{products.length}</span> products
           </div>
         </div>
 
-        {/* Products Section (Optional Add-on for completeness) */}
-        {products.length > 0 && (
-          <div className="mt-5 pt-4">
-            <h5 className="fw-bold mb-4">Top Rated <span className="text-success">Products</span> in {category?.name}</h5>
-            <div className="row g-4">
-              {products.map(product => (
-                <div key={product._id} className="col-6 col-md-4 col-lg-3">
-                  <ProductCard product={product} />
-                </div>
-              ))}
+        {/* ── Products Grid ── */}
+        {products.length > 0 ? (
+          <div className="row g-4 mb-5">
+            {products.map((p) => (
+              <div key={p._id} className="col-6 col-md-4 col-lg-3">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-5 my-5">
+            <div className="mb-4">
+              <i className="fas fa-box-open display-1 text-light"></i>
             </div>
+            <h3 className="fw-bold text-dark">No products found</h3>
+            <p className="text-muted">We couldn't find any products in this category at the moment.</p>
+            <Link to="/products" className="btn btn-success rounded-pill px-4 py-2 mt-3">Explore All Products</Link>
           </div>
         )}
       </div>
 
       <style>{`
-        .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.5); content: "/"; }
-        .subcategory-card:hover {
-          transform: translateY(-5px);
-          border-color: #22c55e !important;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
-          cursor: pointer;
+        .category-banner {
+          position: relative;
+          overflow: hidden;
         }
-        .subcategory-card:hover h6 { color: #22c55e; }
+        .category-banner::after {
+          content: "";
+          position: absolute;
+          right: -50px;
+          top: -50px;
+          width: 300px;
+          height: 300px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 50%;
+        }
+        .breadcrumb-item + .breadcrumb-item::before {
+          content: "/";
+          color: rgba(255,255,255,0.5);
+          padding: 0 10px;
+        }
+        .ls-wide { letter-spacing: 0.05em; }
+        .filter-tag { transition: all 0.2s; }
+        .filter-tag:hover { background: rgba(10, 173, 10, 0.15) !important; }
       `}</style>
     </div>
   );

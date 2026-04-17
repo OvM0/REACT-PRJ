@@ -122,13 +122,14 @@ export default function Navbar() {
             <ul className="navbar-nav align-items-center gap-lg-3 mx-lg-3 mt-3 mt-lg-0">
               <li className="nav-item"><NavLink className="nav-link fw-semibold px-2" to="/">Home</NavLink></li>
               <li className="nav-item"><NavLink className="nav-link fw-semibold px-2" to="/products">Shop</NavLink></li>
-              <li className="nav-item dropdown">
-                <span className="nav-link dropdown-toggle fw-semibold px-2" role="button" data-bs-toggle="dropdown">
-                  Categories
+              <li className="nav-item dropdown custom-dropdown">
+                <span className="nav-link fw-semibold px-2 d-flex align-items-center dropdown-trigger" role="button">
+                  Categories <i className="fas fa-chevron-down ms-1 toggle-icon" style={{ fontSize: '0.65rem', marginTop: '2px' }}></i>
                 </span>
-                <ul className="dropdown-menu border-0 shadow-lg rounded-4 p-2">
-                  {categories.map(cat => (
-                    <li key={cat._id}><Link className="dropdown-item rounded-3 small" to={`/categories/${cat._id}`}>{cat.name}</Link></li>
+                <ul className="dropdown-menu border-0 shadow rounded-4 p-3 custom-dropdown-menu">
+                  <li><Link className="dropdown-item rounded-3" to="/categories">All Categories</Link></li>
+                  {categories.slice(0, 4).map(cat => (
+                    <li key={cat._id}><Link className="dropdown-item rounded-3" to={`/categories/${cat._id}`}>{cat.name}</Link></li>
                   ))}
                 </ul>
               </li>

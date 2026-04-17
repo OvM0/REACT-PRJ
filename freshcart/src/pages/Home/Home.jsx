@@ -19,23 +19,24 @@ const DEPARTMENTS = [
 
 const HERO_SLIDES = [
   {
-    title: 'Free Shipping on orders over $100',
-    subtitle: 'Free Shipping on orders over $100',
-    description: "Don't miss this opportunity to save more on your favorite products.",
-    bg: '#f0f3f2',
+    title: 'Fresh Products Delivered to your Door',
+    description: "Get 20% off your first order. Don't miss this opportunity!",
     img: 'https://freshcart.codescandy.com/assets/images/slider/slider-image-1.jpg',
-    badge: 'Free Shipping',
     btnLabel: 'Shop Now',
     btnTo: '/products',
   },
   {
     title: 'Get 25% Off on Fresh Fruits',
-    subtitle: 'Limited Time Offer',
     description: 'Fresh from the farm to your doorstep. Stay healthy with our organic picks.',
-    bg: '#fdf5e6',
     img: 'https://freshcart.codescandy.com/assets/images/slider/slider-image-2.jpg',
-    badge: 'Flat 25% Off',
     btnLabel: 'Shop Now',
+    btnTo: '/products',
+  },
+  {
+    title: 'Free Shipping on Orders Over $100',
+    description: 'Shop smart and save more. Unlimited free delivery on qualifying orders.',
+    img: 'https://freshcart.codescandy.com/assets/images/slider/slider-image-1.jpg',
+    btnLabel: 'View Deals',
     btnTo: '/products',
   },
 ];
@@ -45,6 +46,9 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroSlide, setHeroSlide] = useState(0);
+
+  const prevSlide = () => setHeroSlide(s => (s - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const nextSlide = () => setHeroSlide(s => (s + 1) % HERO_SLIDES.length);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -75,29 +79,35 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      {/* Hero Section - Exact Design */}
+      {/* Hero Section - Auto Switching Slider */}
       <section className="hero-full-width position-relative">
         <div className="hero-slider-wrap rounded-0 overflow-hidden">
           <div 
             className="hero-slide-main d-flex align-items-center" 
             style={{ 
-              backgroundImage: 'url(https://freshcart.codescandy.com/assets/images/slider/slider-image-1.jpg)', 
+              backgroundImage: `url(${HERO_SLIDES[heroSlide].img})`, 
               backgroundSize: 'cover', 
               backgroundPosition: 'center',
-              minHeight: '480px'
+              minHeight: '480px',
+              transition: 'background-image 0.6s ease-in-out'
             }}
           >
-            <div className="container">
-              <div className="hero-text-box" style={{ maxWidth: '600px', zIndex: 10 }}>
-                <h1 className="display-3 fw-bold mb-3 text-white">
-                  Fresh Products Delivered <br /> to your Door
+            {/* Dark overlay for readability */}
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.38)', zIndex: 1 }} />
+
+            <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+              <div className="hero-text-box" style={{ maxWidth: '600px' }}>
+                <h1 className="display-3 fw-bold mb-3 text-white" key={heroSlide + '-title'}
+                  style={{ animation: 'fadeSlideUp 0.5s ease' }}>
+                  {HERO_SLIDES[heroSlide].title}
                 </h1>
-                <p className="lead mb-4 fs-5 text-white opacity-90">
-                  Get 20% off your first order
+                <p className="lead mb-4 fs-5 text-white opacity-90" key={heroSlide + '-desc'}
+                  style={{ animation: 'fadeSlideUp 0.6s ease' }}>
+                  {HERO_SLIDES[heroSlide].description}
                 </p>
                 <div className="d-flex gap-3">
-                  <Link to="/products" className="btn btn-light-custom btn-lg px-4 py-2 rounded-2 fw-bold" style={{ fontSize: '1rem' }}>
-                    Shop Now
+                  <Link to={HERO_SLIDES[heroSlide].btnTo} className="btn btn-light-custom btn-lg px-4 py-2 rounded-2 fw-bold" style={{ fontSize: '1rem' }}>
+                    {HERO_SLIDES[heroSlide].btnLabel}
                   </Link>
                   <Link to="/products" className="btn btn-outline-light-custom btn-lg px-4 py-2 rounded-2 fw-bold" style={{ fontSize: '1rem' }}>
                     View Deals
@@ -107,18 +117,23 @@ export default function Home() {
             </div>
             
             {/* Nav Arrows */}
-            <button className="hero-nav-arrow start-arrow">
+            <button className="hero-nav-arrow start-arrow" onClick={prevSlide} aria-label="Previous slide">
               <i className="fas fa-chevron-left"></i>
             </button>
-            <button className="hero-nav-arrow end-arrow">
+            <button className="hero-nav-arrow end-arrow" onClick={nextSlide} aria-label="Next slide">
               <i className="fas fa-chevron-right"></i>
             </button>
 
             {/* Dots */}
-            <div className="hero-pagination-dots">
-              <span className="h-dot active"></span>
-              <span className="h-dot"></span>
-              <span className="h-dot"></span>
+            <div className="hero-pagination-dots" style={{ zIndex: 3 }}>
+              {HERO_SLIDES.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-dot${heroSlide === i ? ' active' : ''}`}
+                  onClick={() => setHeroSlide(i)}
+                  style={{ cursor: 'pointer' }}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -190,7 +205,7 @@ export default function Home() {
         <div className="row g-3 g-md-4 categories-grid-new">
           {categories.slice(0, 10).map((cat) => (
             <div key={cat._id} className="col-4 col-md-3 col-lg-2">
-              <Link to={`/products?category=${cat._id}`} className="text-decoration-none">
+              <Link to={`/categories/${cat._id}`} className="text-decoration-none">
                 <div className="category-card-circle p-3 p-md-4 text-center bg-white rounded-3 shadow-sm h-100">
                   <div className="cat-img-wrapper mb-3 mx-auto overflow-hidden rounded-circle bg-light d-flex align-items-center justify-content-center" style={{ width: '100px', height: '100px' }}>
                     <img

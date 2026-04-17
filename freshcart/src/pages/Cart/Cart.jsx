@@ -12,24 +12,23 @@ export default function Cart() {
 
   async function handleRemove(productId) {
     try {
-      await dispatch(removeFromCart(productId)).unwrap();
-      toast.success('تمت إزالة المنتج');
-    } catch { toast.error('حدث خطأ'); }
+      toast.success('Product removed successfully');
+    } catch { toast.error('Error removing product'); }
   }
 
   async function handleUpdate(productId, count) {
     if (count < 1) { handleRemove(productId); return; }
     try {
       await dispatch(updateCartItem({ productId, count })).unwrap();
-    } catch { toast.error('حدث خطأ'); }
+    } catch { toast.error('Error updating quantity'); }
   }
 
   async function handleClear() {
-    if (!window.confirm('هل تريد إفراغ السلة؟')) return;
+    if (!window.confirm('Do you want to clear your cart?')) return;
     try {
       await dispatch(clearCart()).unwrap();
-      toast.success('تم إفراغ السلة');
-    } catch { toast.error('حدث خطأ'); }
+      toast.success('Cart cleared successfully');
+    } catch { toast.error('Error clearing cart'); }
   }
 
   if (loading) return <Loading />;
@@ -41,10 +40,10 @@ export default function Cart() {
           <div className="empty-cart-icon mb-4">
             <i className="fas fa-cart-shopping fa-5x text-muted"></i>
           </div>
-          <h2 className="fw-bold mb-2" style={{ color: '#1a1a2e' }}>سلتك فارغة!</h2>
-          <p className="text-muted mb-4">أضف بعض المنتجات إلى سلتك وابدأ التسوق</p>
+          <h2 className="fw-bold mb-2" style={{ color: '#1a1a2e' }}>Your cart is empty!</h2>
+          <p className="text-muted mb-4">Add some products to your cart and start shopping</p>
           <Link to="/products" className="btn btn-success rounded-pill px-5 py-2 fw-bold">
-            <i className="fas fa-store me-2"></i>تسوق الآن
+            <i className="fas fa-store me-2"></i>Shop Now
           </Link>
         </div>
       </div>
@@ -58,12 +57,12 @@ export default function Cart() {
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div>
             <h1 className="fw-bold mb-1" style={{ color: '#1a1a2e' }}>
-              <i className="fas fa-cart-shopping me-2 text-success"></i>سلة التسوق
+              <i className="fas fa-cart-shopping me-2 text-success"></i>Shopping Cart
             </h1>
-            <p className="text-muted mb-0">{numOfCartItems} منتج في سلتك</p>
+            <p className="text-muted mb-0">{numOfCartItems} products in your cart</p>
           </div>
           <button className="btn btn-outline-danger rounded-pill" onClick={handleClear}>
-            <i className="fas fa-trash me-2"></i>إفراغ السلة
+            <i className="fas fa-trash me-2"></i>Clear Cart
           </button>
         </div>
 
@@ -96,7 +95,7 @@ export default function Cart() {
                           </h6>
                         </Link>
                         <p className="text-success fw-bold mb-0">
-                          {item.price} جنيه
+                          {item.price} EGP
                         </p>
                         <p className="text-muted small mb-0">{item.product?.category?.name}</p>
                       </div>
@@ -125,12 +124,12 @@ export default function Cart() {
                       {/* Total + Remove */}
                       <div className="col-12 col-md-2 d-flex align-items-center justify-content-between justify-content-md-end">
                         <span className="fw-bold text-success d-md-none">
-                          {(item.price * item.count).toLocaleString()} جنيه
+                          {(item.price * item.count).toLocaleString()} EGP
                         </span>
                         <button
                           className="btn btn-link text-danger p-1 ms-2"
                           onClick={() => handleRemove(item.product?._id)}
-                          title="إزالة"
+                          title="Remove"
                         >
                           <i className="fas fa-times-circle fs-5"></i>
                         </button>
@@ -139,7 +138,7 @@ export default function Cart() {
                       {/* Item Total (Desktop) */}
                       <div className="col-md-2 d-none d-md-block text-end">
                         <span className="fw-bold text-success">
-                          {(item.price * item.count).toLocaleString()} جنيه
+                          {(item.price * item.count).toLocaleString()} EGP
                         </span>
                       </div>
                     </div>
@@ -153,29 +152,29 @@ export default function Cart() {
           <div className="col-lg-4">
             <div className="card border-0 shadow-sm sticky-top" style={{ top: '80px' }}>
               <div className="card-body p-4">
-                <h5 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>ملخص الطلب</h5>
+                <h5 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>Order Summary</h5>
 
                 <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">المنتجات ({numOfCartItems})</span>
-                  <span>{totalPrice?.toLocaleString()} جنيه</span>
+                  <span className="text-muted">Items ({numOfCartItems})</span>
+                  <span>{totalPrice?.toLocaleString()} EGP</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">الشحن</span>
+                  <span className="text-muted">Shipping</span>
                   <span className="text-success fw-semibold">
-                    {totalPrice >= 500 ? 'مجاني' : '50 جنيه'}
+                    {totalPrice >= 500 ? 'Free' : '50 EGP'}
                   </span>
                 </div>
                 {totalPrice < 500 && (
                   <div className="alert alert-info py-2 px-3" style={{ fontSize: '0.85rem' }}>
                     <i className="fas fa-info-circle me-1"></i>
-                    أضف {500 - totalPrice} جنيه للحصول على شحن مجاني
+                    Add {500 - totalPrice} EGP for free shipping
                   </div>
                 )}
                 <hr />
                 <div className="d-flex justify-content-between mb-4">
-                  <span className="fw-bold fs-5">الإجمالي</span>
+                  <span className="fw-bold fs-5">Total</span>
                   <span className="fw-bold fs-5 text-success">
-                    {(totalPrice + (totalPrice < 500 ? 50 : 0)).toLocaleString()} جنيه
+                    {(totalPrice + (totalPrice < 500 ? 50 : 0)).toLocaleString()} EGP
                   </span>
                 </div>
 
@@ -184,11 +183,11 @@ export default function Cart() {
                   onClick={() => navigate(`/checkout/${cartId}`)}
                 >
                   <i className="fas fa-lock me-2"></i>
-                  إتمام الشراء
+                  Checkout
                 </button>
                 <Link to="/products" className="btn btn-outline-secondary w-100 rounded-pill py-2 mt-2">
                   <i className="fas fa-arrow-right me-2"></i>
-                  متابعة التسوق
+                  Continue Shopping
                 </Link>
               </div>
             </div>
